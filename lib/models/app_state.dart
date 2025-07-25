@@ -4,12 +4,19 @@ import 'package:flutter/services.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:ps_list/ps_list.dart';
 import 'package:auto_saver/models/app_info.dart';
+import 'package:auto_saver/models/save_log.dart';
+
+enum LogSortType { time, appName }
 
 class AppState extends ChangeNotifier {
   List<AppInfo> applications = [];
   int interval = 5; // minutes
   bool onlyActiveWindow = true;
   bool isRunning = false;
+  bool isDarkMode = true; // Default to dark mode
+  bool showLogs = false;
+  List<SaveLog> saveLogs = [];
+  LogSortType currentSortType = LogSortType.time;
 
   Timer? _timer;
   
@@ -151,6 +158,19 @@ class AppState extends ChangeNotifier {
   List<AppInfo> get selectedApplications => 
       applications.where((app) => app.isSelected).toList();
 
+  List<SaveLog> get sortedLogs {
+    final sorted = List<SaveLog>.from(saveLogs);
+    switch (currentSortType) {
+      case LogSortType.time:
+        sorted.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+        break;
+      case LogSortType.appName:
+        sorted.sort((a, b) => a.appName.compareTo(b.appName));
+        break;
+    }
+    return sorted;
+  }
+
   void toggleApplicationSelection(int index) {
     if (index >= 0 && index < applications.length) {
       applications[index].toggleSelection();
@@ -169,6 +189,26 @@ class AppState extends ChangeNotifier {
     for (final app in applications) {
       app.isSelected = false;
     }
+    notifyListeners();
+  }
+
+  void toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    notifyListeners();
+  }
+
+  void toggleLogs() {
+    showLogs = !showLogs;
+    notifyListeners();
+  }
+
+  void setLogSortType(LogSortType sortType) {
+    currentSortType = sortType;
+    notifyListeners();
+  }
+
+  void clearLogs() {
+    saveLogs.clear();
     notifyListeners();
   }
 
@@ -218,10 +258,19 @@ class AppState extends ChangeNotifier {
       // Simulate Ctrl+S using Flutter's services
       await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
       
-      // For now, just print a message
+      // Add logs for each selected application
       for (final app in selectedApplications) {
+        final log = SaveLog(
+          appName: app.name,
+          processName: app.processName,
+          timestamp: DateTime.now(),
+          success: true,
+        );
+        saveLogs.add(log);
         print('Auto-saved process: ${app.processName}');
       }
+      
+      notifyListeners();
       
       // In a real implementation, you would:
       // 1. Find the target window
@@ -231,6 +280,18 @@ class AppState extends ChangeNotifier {
       
     } catch (e) {
       print('Error during auto-save: $e');
+      
+      // Add error logs
+      for (final app in selectedApplications) {
+        final log = SaveLog(
+          appName: app.name,
+          processName: app.processName,
+          timestamp: DateTime.now(),
+          success: false,
+        );
+        saveLogs.add(log);
+      }
+      notifyListeners();
     }
   }
 }

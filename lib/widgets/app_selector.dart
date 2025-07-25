@@ -24,7 +24,9 @@ class _AppSelectorState extends State<AppSelector> {
     
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(
+          color: state.isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+        ),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -34,7 +36,7 @@ class _AppSelectorState extends State<AppSelector> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
+              color: state.isDarkMode ? Colors.grey[800] : Colors.grey[50],
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(8),
                 topRight: Radius.circular(8),
@@ -45,15 +47,19 @@ class _AppSelectorState extends State<AppSelector> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.apps, size: 20, color: Colors.grey),
+                    Icon(
+                      Icons.apps, 
+                      size: 20, 
+                      color: state.isDarkMode ? Colors.white70 : Colors.grey,
+                    ),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Chọn ứng dụng cần tự động lưu:',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.grey,
+                          color: state.isDarkMode ? Colors.white70 : Colors.grey,
                         ),
                       ),
                     ),
@@ -66,18 +72,24 @@ class _AppSelectorState extends State<AppSelector> {
                     Flexible(
                       child: TextButton(
                         onPressed: () => state.selectAllApplications(),
-                        child: const Text(
+                        child: Text(
                           'Chọn tất cả',
-                          style: TextStyle(fontSize: 12),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: state.isDarkMode ? Colors.blue[300] : Colors.blue[600],
+                          ),
                         ),
                       ),
                     ),
                     Flexible(
                       child: TextButton(
                         onPressed: () => state.deselectAllApplications(),
-                        child: const Text(
+                        child: Text(
                           'Bỏ chọn tất cả',
-                          style: TextStyle(fontSize: 12),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: state.isDarkMode ? Colors.blue[300] : Colors.blue[600],
+                          ),
                         ),
                       ),
                     ),
@@ -91,22 +103,28 @@ class _AppSelectorState extends State<AppSelector> {
           Container(
             height: 200,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: state.isDarkMode ? Colors.grey[900] : Colors.white,
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(8),
                 bottomRight: Radius.circular(8),
               ),
             ),
             child: state.applications.isEmpty
-                ? const Center(
+                ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.search_off, size: 48, color: Colors.grey),
-                        SizedBox(height: 8),
+                        Icon(
+                          Icons.search_off, 
+                          size: 48, 
+                          color: state.isDarkMode ? Colors.grey[600] : Colors.grey,
+                        ),
+                        const SizedBox(height: 8),
                         Text(
                           'Không tìm thấy ứng dụng nào',
-                          style: TextStyle(color: Colors.grey),
+                          style: TextStyle(
+                            color: state.isDarkMode ? Colors.grey[500] : Colors.grey,
+                          ),
                         ),
                       ],
                     ),
@@ -124,11 +142,13 @@ class _AppSelectorState extends State<AppSelector> {
                           margin: const EdgeInsets.only(bottom: 4),
                           decoration: BoxDecoration(
                             color: app.isSelected 
-                                ? Colors.blue.shade50 
+                                ? (state.isDarkMode ? Colors.blue[900]!.withOpacity(0.3) : Colors.blue[50])
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(6),
                             border: app.isSelected 
-                                ? Border.all(color: Colors.blue.shade200)
+                                ? Border.all(
+                                    color: state.isDarkMode ? Colors.blue[600]! : Colors.blue[200]!,
+                                  )
                                 : null,
                           ),
                           child: CheckboxListTile(
@@ -140,8 +160,8 @@ class _AppSelectorState extends State<AppSelector> {
                                     ? FontWeight.w600 
                                     : FontWeight.normal,
                                 color: app.isSelected 
-                                    ? Colors.blue.shade700 
-                                    : Colors.grey.shade800,
+                                    ? (state.isDarkMode ? Colors.blue[300] : Colors.blue[700])
+                                    : (state.isDarkMode ? Colors.white : Colors.grey[800]),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -149,7 +169,7 @@ class _AppSelectorState extends State<AppSelector> {
                               app.processName,
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Colors.grey.shade600,
+                                color: state.isDarkMode ? Colors.grey[400] : Colors.grey[600],
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -164,7 +184,8 @@ class _AppSelectorState extends State<AppSelector> {
                             checkboxShape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            activeColor: Colors.blue.shade600,
+                            activeColor: state.isDarkMode ? Colors.blue[400] : Colors.blue[600],
+                            checkColor: state.isDarkMode ? Colors.white : Colors.white,
                           ),
                         );
                       },
@@ -177,7 +198,7 @@ class _AppSelectorState extends State<AppSelector> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: state.isDarkMode ? Colors.grey[800] : Colors.grey[50],
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(8),
                   bottomRight: Radius.circular(8),
@@ -189,8 +210,8 @@ class _AppSelectorState extends State<AppSelector> {
                     Icons.check_circle,
                     size: 16,
                     color: state.selectedApplications.isNotEmpty 
-                        ? Colors.green 
-                        : Colors.grey,
+                        ? (state.isDarkMode ? Colors.green[400] : Colors.green)
+                        : (state.isDarkMode ? Colors.grey[600] : Colors.grey),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -199,8 +220,8 @@ class _AppSelectorState extends State<AppSelector> {
                       style: TextStyle(
                         fontSize: 12,
                         color: state.selectedApplications.isNotEmpty 
-                            ? Colors.green.shade700 
-                            : Colors.grey.shade600,
+                            ? (state.isDarkMode ? Colors.green[300] : Colors.green[700])
+                            : (state.isDarkMode ? Colors.grey[500] : Colors.grey[600]),
                         fontWeight: FontWeight.w500,
                       ),
                       overflow: TextOverflow.ellipsis,
