@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Auto Saver',
+      title: 'Tremo Save',
       theme: ThemeData(
         primaryColor: Colors.grey[900],
         scaffoldBackgroundColor: Colors.grey[100],

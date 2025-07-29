@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Auto Saver',
+          'Tremo Save',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         backgroundColor: state.isDarkMode ? Colors.grey[900] : Colors.grey[900],
