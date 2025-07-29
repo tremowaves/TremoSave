@@ -5,6 +5,9 @@ import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:ps_list/ps_list.dart';
 import 'package:auto_saver/models/app_info.dart';
 import 'package:auto_saver/models/save_log.dart';
+import 'package:auto_saver/models/app_settings.dart';
+import 'package:auto_saver/services/tray_service.dart';
+import 'package:auto_saver/services/auto_start_service.dart';
 
 enum LogSortType { time, appName }
 
@@ -17,11 +20,17 @@ class AppState extends ChangeNotifier {
   bool showLogs = false;
   List<SaveLog> saveLogs = [];
   LogSortType currentSortType = LogSortType.time;
+  
+  // Settings mới
+  bool autoRun = false;
+  bool minimizeToTray = false;
+  bool showNotifications = true;
 
   Timer? _timer;
   
   AppState() {
     loadApplications();
+    loadSettings();
   }
 
   Future<void> loadApplications() async {
@@ -477,6 +486,7 @@ class AppState extends ChangeNotifier {
   void toggleApplicationSelection(int index) {
     if (index >= 0 && index < applications.length) {
       applications[index].toggleSelection();
+      saveSettings(); // Auto save settings when selection changes
       notifyListeners();
     }
   }
@@ -487,6 +497,49 @@ class AppState extends ChangeNotifier {
       return applications[index].processName.split(', ');
     }
     return [];
+  }
+
+  // Load settings từ SharedPreferences
+  Future<void> loadSettings() async {
+    try {
+      final settings = await AppSettings.loadAllSettings();
+      interval = settings['interval'];
+      onlyActiveWindow = settings['onlyActiveWindow'];
+      autoRun = settings['autoRun'];
+      minimizeToTray = settings['minimizeToTray'];
+      showNotifications = settings['showNotifications'];
+      
+      // Load selected apps
+      final selectedAppNames = settings['selectedApps'] as List<String>;
+      for (final app in applications) {
+        app.isSelected = selectedAppNames.contains(app.name);
+      }
+      
+      notifyListeners();
+    } catch (e) {
+      print('Error loading settings: $e');
+    }
+  }
+
+  // Save settings
+  Future<void> saveSettings() async {
+    try {
+      final selectedAppNames = applications
+          .where((app) => app.isSelected)
+          .map((app) => app.name)
+          .toList();
+
+      await AppSettings.saveAllSettings(
+        selectedApps: selectedAppNames,
+        interval: interval,
+        onlyActiveWindow: onlyActiveWindow,
+        autoRun: autoRun,
+        minimizeToTray: minimizeToTray,
+        showNotifications: showNotifications,
+      );
+    } catch (e) {
+      print('Error saving settings: $e');
+    }
   }
 
   void selectAllApplications() {
@@ -525,11 +578,39 @@ class AppState extends ChangeNotifier {
 
   void setInterval(double value) {
     interval = value.toInt();
+    saveSettings();
     notifyListeners();
   }
 
   void setOnlyActiveWindow(bool? value) {
     onlyActiveWindow = value ?? true;
+    saveSettings();
+    notifyListeners();
+  }
+
+  void setAutoRun(bool value) async {
+    autoRun = value;
+    saveSettings();
+    
+    // Cập nhật auto-start trong Windows Registry
+    if (value) {
+      await AutoStartService.enableAutoStart();
+    } else {
+      await AutoStartService.disableAutoStart();
+    }
+    
+    notifyListeners();
+  }
+
+  void setMinimizeToTray(bool value) {
+    minimizeToTray = value;
+    saveSettings();
+    notifyListeners();
+  }
+
+  void setShowNotifications(bool value) {
+    showNotifications = value;
+    saveSettings();
     notifyListeners();
   }
 
@@ -565,6 +646,9 @@ class AppState extends ChangeNotifier {
   Future<void> _doSave() async {
     if (selectedApplications.isEmpty) return;
 
+    final savedApps = <String>[];
+    bool hasError = false;
+
     try {
       // Simulate Ctrl+S using Flutter's services
       await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
@@ -581,11 +665,20 @@ class AppState extends ChangeNotifier {
             success: true,
           );
           saveLogs.add(log);
+          savedApps.add(app.name);
           print('Auto-saved process: ${processName.trim()}');
         }
       }
       
       notifyListeners();
+      
+      // Hiển thị notification
+      if (showNotifications) {
+        await TrayService.showAutoSaveNotification(
+          savedApps: savedApps,
+          success: true,
+        );
+      }
       
       // In a real implementation, you would:
       // 1. Find the target window
@@ -595,6 +688,7 @@ class AppState extends ChangeNotifier {
       
     } catch (e) {
       print('Error during auto-save: $e');
+      hasError = true;
       
       // Add error logs
       for (final app in selectedApplications) {
@@ -610,6 +704,14 @@ class AppState extends ChangeNotifier {
         }
       }
       notifyListeners();
+
+      // Hiển thị notification lỗi
+      if (showNotifications) {
+        await TrayService.showAutoSaveNotification(
+          savedApps: [],
+          success: false,
+        );
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:auto_saver/models/app_state.dart';
 import 'package:auto_saver/widgets/app_selector.dart';
 import 'package:auto_saver/widgets/log_panel.dart';
+import 'package:auto_saver/screens/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,12 +40,25 @@ class HomePage extends StatelessWidget {
             onPressed: () => state.toggleLogs(),
             tooltip: 'Hiển thị lịch sử lưu',
           ),
-          // Refresh button
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => state.loadApplications(),
-            tooltip: 'Làm mới danh sách ứng dụng',
-          ),
+                           // Refresh button
+                 IconButton(
+                   icon: const Icon(Icons.refresh),
+                   onPressed: () => state.loadApplications(),
+                   tooltip: 'Làm mới danh sách ứng dụng',
+                 ),
+                 // Settings button
+                 IconButton(
+                   icon: const Icon(Icons.settings),
+                   onPressed: () {
+                     Navigator.push(
+                       context,
+                       MaterialPageRoute(
+                         builder: (context) => const SettingsPage(),
+                       ),
+                     );
+                   },
+                   tooltip: 'Cài đặt',
+                 ),
         ],
       ),
       body: Container(

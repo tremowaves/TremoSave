@@ -1,0 +1,51 @@
+🎨 2D Graphics & Design
+Adobe Creative Suite: Photoshop, Illustrator, InDesign, XD
+Design Tools: Figma, Sketch, Affinity Designer/Photo/Publisher
+Free Alternatives: GIMP, Inkscape, Krita, Paint.NET
+Professional: CorelDRAW, Xara Designer, Canva
+🎭 3D Modeling & Animation
+3D Software: Blender, Maya, 3ds Max, Cinema 4D, Houdini
+Sculpting: ZBrush, Mudbox
+CAD/CAM: Fusion 360, SolidWorks, AutoCAD, Revit, Rhino
+Architecture: ArchiCAD, Vectorworks
+Rendering: V-Ray, Corona, Arnold, Redshift, Octane
+🎬 Video Editing & VFX
+Professional: Premiere Pro, After Effects, DaVinci Resolve
+VFX: Nuke, Fusion, Flame, HitFilm
+Streaming: OBS Studio, Streamlabs, XSplit, Camtasia
+Other: Vegas Pro, EDIUS, Avid Media Composer
+🎮 Game Engines & Development
+Major Engines: Unity, Unreal Engine, Godot
+2D Game Dev: GameMaker, Construct, RPG Maker
+Visual Programming: Scratch, Stencyl, Twine
+Frameworks: Cocos2d, LÖVE, SFML, SDL, MonoGame
+💻 Programming & Development
+Code Editors: VS Code, Cursor, Sublime Text, Atom, Notepad++
+IDEs: Visual Studio, IntelliJ, Eclipse, NetBeans, Android Studio
+Compilers: GCC, MSVC, Java, Python, Node.js
+Servers: XAMPP, WAMP
+📊 Office & Productivity
+Microsoft Office: Word, Excel, PowerPoint, Outlook, Access, Publisher, OneNote
+Alternatives: LibreOffice, OpenOffice, WPS Office
+Browsers: Chrome, Firefox, Edge, Opera, Brave, Safari, Vivaldi, Tor
+Communication: Teams, Skype, Zoom, Webex, GoToMeeting
+��️ File Management & Utilities
+File Managers: Total Commander, FreeCommander, XYplorer
+Compression: WinRAR, 7-Zip, WinZip, PeaZip, Bandizip
+Download: uTorrent, qBittorrent, Transmission, Deluge
+Security: CCleaner, Malwarebytes, Avast, Norton, McAfee
+Remote Access: TeamViewer, AnyDesk, UltraViewer, LogMeIn
+�� Creative & Media
+Music: Spotify, iTunes, Windows Media Player, QuickTime
+Video Players: VLC, PotPlayer, Media Player Classic, Kodi
+Communication: Discord, Telegram, WhatsApp, Slack
+🎮 Gaming & Entertainment
+Game Launchers: Steam, Epic Games, Origin, Ubisoft Connect, Battle.net
+Popular Games: Minecraft, Roblox, Fortnite, LoL, Valorant, CS:GO, Dota 2, Overwatch, Apex, PUBG, GTA V, RDR2, Cyberpunk 2077
+✨ Tính năng mới:
+Nhóm ứng dụng trùng lặp: Các process cùng tên sẽ được nhóm lại
+Tìm kiếm thông minh: Tìm theo tên ứng dụng hoặc process name
+Hiển thị số process: Ví dụ "3 processes: chrome.exe, chrome.exe, chrome.exe..."
+Hỗ trợ đa dạng: Từ game development đến office work, từ 3D modeling đến video editing
+Bây giờ ứng dụng Tremo Save có thể nhận diện và hỗ trợ auto-save cho hơn 200+ ứng dụng khác nhau! 🚀
+Bạn có muốn tôi thêm bất kỳ ứng dụng cụ thể nào khác không?
