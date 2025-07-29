@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:local_notifier/local_notifier.dart';
+import 'package:win32/win32.dart';
 import 'package:auto_saver/models/app_settings.dart';
 
 class TrayService {
@@ -41,14 +41,17 @@ class TrayService {
     String? iconPath,
   }) async {
     try {
-      final notification = LocalNotification(
-        title: title,
-        body: body,
-      );
+      // Sử dụng Windows message box để hiển thị notification
+      final result = await Process.run('powershell', [
+        '-Command',
+        'Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show("$body", "$title", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)'
+      ]);
       
-      await notification.show();
+      print('Notification shown: $title - $body');
     } catch (e) {
       print('Error showing notification: $e');
+      // Fallback: sử dụng print để debug
+      print('NOTIFICATION: $title - $body');
     }
   }
 

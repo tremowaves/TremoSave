@@ -15,7 +15,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   shared_preferences: ^2.2.2
   system_tray: ^2.0.3
-  local_notifier: ^0.1.5
+  win32: ^5.4.0
 
 dev_dependencies:
   flutter_test:

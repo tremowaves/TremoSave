@@ -37,10 +37,15 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 600;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cài đặt'),
+        title: Text(
+          'Cài đặt',
+          style: TextStyle(fontSize: isSmallScreen ? 16 : 18),
+        ),
         backgroundColor: state.isDarkMode ? Colors.grey[900] : Colors.grey[900],
         foregroundColor: Colors.white,
         elevation: 0,
@@ -48,7 +53,7 @@ class _SettingsPageState extends State<SettingsPage> {
       body: Container(
         color: state.isDarkMode ? Colors.grey[900] : Colors.white,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
           children: [
             // Auto Save Settings
             _buildSection(

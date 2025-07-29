@@ -8,15 +8,20 @@ import 'package:provider/provider.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  @override
+    @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 600;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Tremo Save',
-          style: TextStyle(fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: isSmallScreen ? 16 : 18,
+          ),
         ),
         backgroundColor: state.isDarkMode ? Colors.grey[900] : Colors.grey[900],
         foregroundColor: Colors.white,
@@ -27,6 +32,7 @@ class HomePage extends StatelessWidget {
             icon: Icon(
               state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
               color: state.isDarkMode ? Colors.yellow[300] : Colors.white,
+              size: isSmallScreen ? 20 : 24,
             ),
             onPressed: () => state.toggleDarkMode(),
             tooltip: state.isDarkMode ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối',
@@ -36,29 +42,36 @@ class HomePage extends StatelessWidget {
             icon: Icon(
               Icons.history,
               color: state.showLogs ? Colors.blue[300] : Colors.white,
+              size: isSmallScreen ? 20 : 24,
             ),
             onPressed: () => state.toggleLogs(),
             tooltip: 'Hiển thị lịch sử lưu',
           ),
-                           // Refresh button
-                 IconButton(
-                   icon: const Icon(Icons.refresh),
-                   onPressed: () => state.loadApplications(),
-                   tooltip: 'Làm mới danh sách ứng dụng',
-                 ),
-                 // Settings button
-                 IconButton(
-                   icon: const Icon(Icons.settings),
-                   onPressed: () {
-                     Navigator.push(
-                       context,
-                       MaterialPageRoute(
-                         builder: (context) => const SettingsPage(),
-                       ),
-                     );
-                   },
-                   tooltip: 'Cài đặt',
-                 ),
+          // Refresh button
+          IconButton(
+            icon: Icon(
+              Icons.refresh,
+              size: isSmallScreen ? 20 : 24,
+            ),
+            onPressed: () => state.loadApplications(),
+            tooltip: 'Làm mới danh sách ứng dụng',
+          ),
+          // Settings button
+          IconButton(
+            icon: Icon(
+              Icons.settings,
+              size: isSmallScreen ? 20 : 24,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsPage(),
+                ),
+              );
+            },
+            tooltip: 'Cài đặt',
+          ),
         ],
       ),
       body: Container(

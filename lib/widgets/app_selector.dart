@@ -24,6 +24,8 @@ class _AppSelectorState extends State<AppSelector> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 600;
     
     return Container(
       decoration: BoxDecoration(
@@ -37,7 +39,7 @@ class _AppSelectorState extends State<AppSelector> {
         children: [
           // Header với nút Select All/Deselect All
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(isSmallScreen ? 8 : 12),
             decoration: BoxDecoration(
               color: state.isDarkMode ? Colors.grey[800] : Colors.grey[50],
               borderRadius: const BorderRadius.only(
@@ -52,15 +54,15 @@ class _AppSelectorState extends State<AppSelector> {
                   children: [
                     Icon(
                       Icons.apps, 
-                      size: 20, 
+                      size: isSmallScreen ? 18 : 20, 
                       color: state.isDarkMode ? Colors.white70 : Colors.grey,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: isSmallScreen ? 6 : 8),
                     Expanded(
                       child: Text(
                         'Chọn ứng dụng cần tự động lưu:',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: isSmallScreen ? 12 : 14,
                           fontWeight: FontWeight.w600,
                           color: state.isDarkMode ? Colors.white70 : Colors.grey,
                         ),
