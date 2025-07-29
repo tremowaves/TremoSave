@@ -53,25 +53,139 @@ class HomePage extends StatelessWidget {
               Icons.refresh,
               size: isSmallScreen ? 20 : 24,
             ),
-            onPressed: () => state.loadApplications(),
+            onPressed: () => state.refreshApplications(),
             tooltip: 'Làm mới danh sách ứng dụng',
           ),
           // Settings button
-          IconButton(
-            icon: Icon(
-              Icons.settings,
-              size: isSmallScreen ? 20 : 24,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsPage(),
-                ),
-              );
-            },
-            tooltip: 'Cài đặt',
-          ),
+                           IconButton(
+                   icon: Icon(
+                     Icons.settings,
+                     size: isSmallScreen ? 20 : 24,
+                   ),
+                   onPressed: () {
+                     Navigator.push(
+                       context,
+                       MaterialPageRoute(
+                         builder: (context) => const SettingsPage(),
+                       ),
+                     );
+                   },
+                   tooltip: 'Cài đặt',
+                 ),
+                 IconButton(
+                   icon: Icon(
+                     Icons.play_arrow,
+                     size: isSmallScreen ? 20 : 24,
+                   ),
+                   onPressed: () async {
+                     // Test Ctrl+S đơn giản
+                     await state.testActiveWindowSave();
+                     // Hiển thị thông báo kết quả
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       SnackBar(
+                         content: Text('Test Ctrl+S completed. Check console for details.'),
+                         duration: Duration(seconds: 2),
+                       ),
+                     );
+                   },
+                   tooltip: 'Test Ctrl+S',
+                 ),
+                 IconButton(
+                   icon: Icon(
+                     Icons.check_circle,
+                     size: isSmallScreen ? 20 : 24,
+                   ),
+                   onPressed: () async {
+                     // Test kiểm tra active window
+                     await state.testActiveWindowInSelectedApps();
+                     // Hiển thị thông báo kết quả
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       SnackBar(
+                         content: Text('Active window check completed. Check console for details.'),
+                         duration: Duration(seconds: 2),
+                       ),
+                     );
+                   },
+                   tooltip: 'Test Active Window Check',
+                 ),
+                 IconButton(
+                   icon: Icon(
+                     Icons.save,
+                     size: isSmallScreen ? 20 : 24,
+                   ),
+                   onPressed: () async {
+                     // Test smart save
+                     await state.testSendCtrlSToActiveWindowIfSelected();
+                     // Hiển thị thông báo kết quả
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       SnackBar(
+                         content: Text('Smart save test completed. Check console for details.'),
+                         duration: Duration(seconds: 2),
+                       ),
+                     );
+                   },
+                   tooltip: 'Test Smart Save',
+                 ),
+                 IconButton(
+                   icon: Icon(
+                     Icons.timer,
+                     size: isSmallScreen ? 20 : 24,
+                   ),
+                   onPressed: () async {
+                     // Test save sau 5 giây
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       SnackBar(
+                         content: Text('Starting 5-second test. Switch to target application now!'),
+                         duration: Duration(seconds: 3),
+                         backgroundColor: Colors.orange,
+                       ),
+                     );
+                     
+                     // Bắt đầu test function
+                     await state.testSaveAfter5Seconds();
+                   },
+                   tooltip: 'Test Save After 5s',
+                 ),
+                 IconButton(
+                   icon: Icon(
+                     Icons.science,
+                     size: isSmallScreen ? 20 : 24,
+                   ),
+                   onPressed: () async {
+                     // Test logic tổng hợp
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       SnackBar(
+                         content: Text('Starting complete logic test...'),
+                         duration: Duration(seconds: 2),
+                         backgroundColor: Colors.purple,
+                       ),
+                     );
+                     
+                     // Bắt đầu test function tổng hợp
+                     await state.testCompleteLogic();
+                   },
+                   tooltip: 'Complete Logic Test',
+                 ),
+                 IconButton(
+                   icon: Icon(
+                     Icons.notifications,
+                     size: isSmallScreen ? 20 : 24,
+                   ),
+                   onPressed: () async {
+                     // Test notification system
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       SnackBar(
+                         content: Text('Testing notification system...'),
+                         duration: Duration(seconds: 2),
+                         backgroundColor: Colors.blue,
+                       ),
+                     );
+                     
+                     // Bắt đầu test notification
+                     await state.testNotificationSystem();
+                   },
+                   tooltip: 'Test Notifications',
+                 ),
         ],
       ),
       body: Container(
@@ -136,7 +250,7 @@ class HomePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Chọn các ứng dụng bạn muốn tự động lưu và thiết lập thời gian lưu',
+                        'Chọn các ứng dụng bạn muốn tự động lưu. Hệ thống sẽ chỉ lưu khi bạn đang làm việc với một trong các ứng dụng đã chọn',
                         style: TextStyle(
                           fontSize: 14,
                           color: state.isDarkMode ? Colors.grey[400] : Colors.grey[600],
@@ -261,43 +375,6 @@ class HomePage extends StatelessWidget {
                       ),
                       
                       const SizedBox(height: 16),
-                      
-                      // Only active window option
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: state.isDarkMode ? Colors.grey[800] : Colors.grey[50],
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: state.isDarkMode ? Colors.grey[700]! : Colors.grey[200]!,
-                          ),
-                        ),
-                        child: CheckboxListTile(
-                          title: Text(
-                            'Chỉ lưu khi cửa sổ ứng dụng đang hoạt động',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: state.isDarkMode ? Colors.white : Colors.black87,
-                            ),
-                          ),
-                          subtitle: Text(
-                            'Tự động lưu chỉ khi bạn đang làm việc với ứng dụng',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: state.isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                            ),
-                          ),
-                          value: state.onlyActiveWindow,
-                          onChanged: (value) {
-                            state.setOnlyActiveWindow(value);
-                          },
-                          controlAffinity: ListTileControlAffinity.leading,
-                          contentPadding: EdgeInsets.zero,
-                          activeColor: state.isDarkMode ? Colors.blue[400] : Colors.blue[600],
-                          checkColor: state.isDarkMode ? Colors.white : Colors.white,
-                        ),
-                      ),
                     ],
                   ),
                 ),

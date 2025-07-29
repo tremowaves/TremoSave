@@ -1,0 +1,25 @@
+Tóm tắt các cải tiến đã thực hiện:
+1. Cải thiện Notification System:
+✅ Thêm option useWindowsNotification để chọn giữa Windows notification bar và popup dialog
+✅ Sử dụng Windows native toast notification thay vì message box
+✅ Thêm setting trong SettingsPage để người dùng có thể tắt/bật notification
+✅ Notification sẽ chỉ hiển thị khi showNotifications = true
+2. Cải thiện Logic Save:
+✅ Focus vào ứng dụng trước khi gửi Ctrl+S: Ứng dụng sẽ tìm window handle của ứng dụng, focus vào nó, rồi gửi Ctrl+S
+✅ Không cần ứng dụng phải active: Logic mới sẽ tự động focus vào ứng dụng cần save
+✅ Switch back: Sau khi gửi Ctrl+S, ứng dụng sẽ trở về trạng thái trước đó
+3. Các tính năng mới:
+✅ Windows Notification Bar: Sử dụng Windows native notification thay vì popup
+✅ Smart Focus: Tự động focus vào ứng dụng cần save
+✅ Better Error Handling: Xử lý lỗi tốt hơn khi ứng dụng không chạy
+✅ Settings Integration: Tất cả settings được lưu và load tự động
+4. Cách hoạt động mới:
+Khi đến thời gian auto-save:
+Tìm tất cả ứng dụng đã chọn
+Với mỗi ứng dụng: focus vào window → gửi Ctrl+S → trở về trạng thái trước
+Hiển thị notification (tùy theo setting)
+Notification Options:
+showNotifications = false: Không hiển thị notification
+useWindowsNotification = true: Sử dụng Windows notification bar
+useWindowsNotification = false: Sử dụng popup dialog
+Bạn có muốn tôi build và test ứng dụng không? Hoặc bạn có muốn tôi điều chỉnh thêm gì khác không?

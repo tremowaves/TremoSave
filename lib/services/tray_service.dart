@@ -28,7 +28,13 @@ class TrayService {
 
     try {
       // TODO: Implement system tray when package is properly configured
+      // Hiện tại sử dụng placeholder, nhưng có thể mở rộng sau
       print('System tray initialized (placeholder)');
+      print('Available callbacks:');
+      print('  - onShowApp: ${_onShowApp != null ? 'registered' : 'null'}');
+      print('  - onStartAutoSave: ${_onStartAutoSave != null ? 'registered' : 'null'}');
+      print('  - onStopAutoSave: ${_onStopAutoSave != null ? 'registered' : 'null'}');
+      print('  - onExit: ${_onExit != null ? 'registered' : 'null'}');
       _isInitialized = true;
     } catch (e) {
       print('Error initializing system tray: $e');
@@ -39,13 +45,41 @@ class TrayService {
     required String title,
     required String body,
     String? iconPath,
+    bool useWindowsNotification = true,
   }) async {
     try {
-      // Sử dụng Windows message box để hiển thị notification
-      final result = await Process.run('powershell', [
-        '-Command',
-        'Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show("$body", "$title", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)'
-      ]);
+      if (useWindowsNotification) {
+        // Sử dụng Windows native toast notification
+        final result = await Process.run('powershell', [
+          '-Command',
+          '''
+          # Kiểm tra xem có module BurntToast không
+          if (Get-Module -ListAvailable -Name BurntToast) {
+              Import-Module BurntToast
+              New-BurntToastNotification -Text "$title", "$body" -Silent
+          } else {
+              # Fallback: sử dụng Windows Forms MessageBox
+              Add-Type -AssemblyName System.Windows.Forms
+              [System.Windows.Forms.MessageBox]::Show("$body", "$title", [System.Windows.Forms.MessageBoxButton]::OK, [System.Windows.Forms.MessageBoxImage]::Information)
+          }
+          '''
+        ]);
+        
+        if (result.exitCode != 0) {
+          print('Failed to show Windows notification: ${result.stderr}');
+          // Fallback: sử dụng simple popup
+          await Process.run('powershell', [
+            '-Command',
+            'Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show("$body", "$title", [System.Windows.Forms.MessageBoxButton]::OK, [System.Windows.Forms.MessageBoxImage]::Information)'
+          ]);
+        }
+      } else {
+        // Sử dụng Windows message box để hiển thị notification
+        final result = await Process.run('powershell', [
+          '-Command',
+          'Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show("$body", "$title", [System.Windows.Forms.MessageBoxButton]::OK, [System.Windows.Forms.MessageBoxImage]::Information)'
+        ]);
+      }
       
       print('Notification shown: $title - $body');
     } catch (e) {
@@ -58,6 +92,7 @@ class TrayService {
   static Future<void> showAutoSaveNotification({
     required List<String> savedApps,
     required bool success,
+    bool useWindowsNotification = true,
   }) async {
     final settings = await AppSettings.loadAllSettings();
     if (!settings['showNotifications']) return;
@@ -70,6 +105,7 @@ class TrayService {
     await showNotification(
       title: title,
       body: body,
+      useWindowsNotification: useWindowsNotification,
     );
   }
 

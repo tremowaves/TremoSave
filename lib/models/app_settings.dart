@@ -8,6 +8,7 @@ class AppSettings {
   static const String _keyAutoRun = 'auto_run';
   static const String _keyMinimizeToTray = 'minimize_to_tray';
   static const String _keyShowNotifications = 'show_notifications';
+  static const String _keyUseWindowsNotification = 'use_windows_notification';
 
   // Lưu danh sách ứng dụng đã chọn
   static Future<void> saveSelectedApps(List<String> appNames) async {
@@ -33,17 +34,7 @@ class AppSettings {
     return prefs.getInt(_keyInterval) ?? 5;
   }
 
-  // Lưu cài đặt only active window
-  static Future<void> saveOnlyActiveWindow(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keyOnlyActiveWindow, value);
-  }
-
-  // Lấy cài đặt only active window
-  static Future<bool> getOnlyActiveWindow() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keyOnlyActiveWindow) ?? true;
-  }
+  // Removed: only active window settings - no longer needed
 
   // Lưu cài đặt auto run
   static Future<void> saveAutoRun(bool value) async {
@@ -81,21 +72,31 @@ class AppSettings {
     return prefs.getBool(_keyShowNotifications) ?? true;
   }
 
+  static Future<void> saveUseWindowsNotification(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyUseWindowsNotification, value);
+  }
+
+  static Future<bool> getUseWindowsNotification() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_keyUseWindowsNotification) ?? true;
+  }
+
   // Lưu tất cả settings
   static Future<void> saveAllSettings({
     required List<String> selectedApps,
     required int interval,
-    required bool onlyActiveWindow,
     required bool autoRun,
     required bool minimizeToTray,
     required bool showNotifications,
+    required bool useWindowsNotification,
   }) async {
     await saveSelectedApps(selectedApps);
     await saveInterval(interval);
-    await saveOnlyActiveWindow(onlyActiveWindow);
     await saveAutoRun(autoRun);
     await saveMinimizeToTray(minimizeToTray);
     await saveShowNotifications(showNotifications);
+    await saveUseWindowsNotification(useWindowsNotification);
   }
 
   // Load tất cả settings
@@ -103,10 +104,10 @@ class AppSettings {
     return {
       'selectedApps': await getSelectedApps(),
       'interval': await getInterval(),
-      'onlyActiveWindow': await getOnlyActiveWindow(),
       'autoRun': await getAutoRun(),
       'minimizeToTray': await getMinimizeToTray(),
       'showNotifications': await getShowNotifications(),
+      'useWindowsNotification': await getUseWindowsNotification(),
     };
   }
 } 

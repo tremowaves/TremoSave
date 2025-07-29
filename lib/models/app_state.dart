@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
@@ -15,7 +16,6 @@ enum LogSortType { time, appName }
 class AppState extends ChangeNotifier {
   List<AppInfo> applications = [];
   int interval = 5; // minutes
-  bool onlyActiveWindow = true;
   bool isRunning = false;
   bool isDarkMode = true; // Default to dark mode
   bool showLogs = false;
@@ -26,6 +26,7 @@ class AppState extends ChangeNotifier {
   bool autoRun = false;
   bool minimizeToTray = false;
   bool showNotifications = true;
+  bool useWindowsNotification = true;
 
   Timer? _timer;
   
@@ -38,19 +39,41 @@ class AppState extends ChangeNotifier {
     try {
       final processes = await PSList.getRunningProcesses();
       
+      print('Found ${processes.length} total processes');
+      
       // Lọc chỉ các ứng dụng có cửa sổ (loại bỏ process ngầm)
       final windowedApps = await _getWindowedApplications(processes);
+      
+      print('Found ${windowedApps.length} windowed applications:');
+      for (final app in windowedApps) {
+        print('  - $app');
+      }
       
       // Tạo map để nhóm các ứng dụng trùng lặp
       final Map<String, List<String>> groupedApps = {};
       
       for (final process in windowedApps) {
-        final displayName = _getDisplayName(process);
-        if (groupedApps.containsKey(displayName)) {
-          groupedApps[displayName]!.add(process);
-        } else {
-          groupedApps[displayName] = [process];
+        // Lọc bỏ các process phụ
+        if (process.contains('_osc_action_') || 
+            process.contains('webhelper') ||
+            process.contains('service') ||
+            process.contains('helper')) {
+          continue;
         }
+        
+        final displayName = _getDisplayName(process);
+        if (displayName != null) {
+          if (groupedApps.containsKey(displayName)) {
+            groupedApps[displayName]!.add(process);
+          } else {
+            groupedApps[displayName] = [process];
+          }
+        }
+      }
+      
+      print('Grouped into ${groupedApps.length} applications:');
+      for (final entry in groupedApps.entries) {
+        print('  - ${entry.key}: ${entry.value.join(', ')}');
       }
       
       // Tạo danh sách ứng dụng đã nhóm
@@ -95,8 +118,8 @@ class AppState extends ChangeNotifier {
       'utorrent.exe', 'qbittorrent.exe',
       'ccleaner.exe', 'malwarebytes.exe', 'avast.exe',
       'teamviewer.exe', 'anydesk.exe', 'ultraviewer.exe',
-      // Thêm Reaper và các ứng dụng audio khác
-      'reaper.exe', 'reaper64.exe', 'reaper32.exe', 'reaper_osc_action_win-amd64.exe',
+      // Thêm Reaper và các ứng dụng audio khác (chỉ process chính)
+      'reaper.exe', 'reaper64.exe', 'reaper32.exe',
       'audacity.exe', 'flstudio.exe', 'ableton.exe', 'protools.exe',
       'cubase.exe', 'logic.exe', 'garageband.exe',
       'cakewalk.exe', 'sonar.exe', 'studioone.exe',
@@ -232,7 +255,6 @@ class AppState extends ChangeNotifier {
       'reaper.exe': 'REAPER',
       'reaper64.exe': 'REAPER (64-bit)',
       'reaper32.exe': 'REAPER (32-bit)',
-      'reaper_osc_action_win-amd64.exe': 'REAPER',
       'audacity.exe': 'Audacity',
       'flstudio.exe': 'FL Studio',
       'ableton.exe': 'Ableton Live',
@@ -493,6 +515,12 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  // Refresh danh sách ứng dụng để loại bỏ các process không còn tồn tại
+  Future<void> refreshApplications() async {
+    await loadApplications();
+    notifyListeners();
+  }
+
   // Thêm method để lấy tất cả process names của một ứng dụng
   List<String> getProcessNamesForApp(int index) {
     if (index >= 0 && index < applications.length) {
@@ -506,7 +534,6 @@ class AppState extends ChangeNotifier {
     try {
       final settings = await AppSettings.loadAllSettings();
       interval = settings['interval'];
-      onlyActiveWindow = settings['onlyActiveWindow'];
       autoRun = settings['autoRun'];
       minimizeToTray = settings['minimizeToTray'];
       showNotifications = settings['showNotifications'];
@@ -534,10 +561,10 @@ class AppState extends ChangeNotifier {
       await AppSettings.saveAllSettings(
         selectedApps: selectedAppNames,
         interval: interval,
-        onlyActiveWindow: onlyActiveWindow,
         autoRun: autoRun,
         minimizeToTray: minimizeToTray,
         showNotifications: showNotifications,
+        useWindowsNotification: useWindowsNotification,
       );
     } catch (e) {
       print('Error saving settings: $e');
@@ -584,11 +611,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setOnlyActiveWindow(bool? value) {
-    onlyActiveWindow = value ?? true;
-    saveSettings();
-    notifyListeners();
-  }
+  // Removed: setOnlyActiveWindow method - no longer needed
 
   void setAutoRun(bool value) async {
     autoRun = value;
@@ -616,6 +639,12 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setUseWindowsNotification(bool value) {
+    useWindowsNotification = value;
+    saveSettings();
+    notifyListeners();
+  }
+
   Future<void> startAutoSave() async {
     if (selectedApplications.isEmpty) return;
     isRunning = true;
@@ -632,6 +661,223 @@ class AppState extends ChangeNotifier {
     }
 
     _timer = Timer.periodic(Duration(minutes: interval), (_) => _doSave());
+  }
+
+  // Test gửi Ctrl+S đến ứng dụng đang active
+  Future<void> testCtrlS() async {
+    print('Testing Ctrl+S to active window...');
+    final success = await KeyboardService.testCtrlS();
+    if (success) {
+      print('✅ Test Ctrl+S successful');
+    } else {
+      print('❌ Test Ctrl+S failed');
+    }
+  }
+
+  // Test gửi Ctrl+S đến REAPER
+  Future<void> testReaperSave() async {
+    print('Testing REAPER save...');
+    final success = await KeyboardService.testReaperSave();
+    if (success) {
+      print('✅ Test REAPER save successful');
+    } else {
+      print('❌ Test REAPER save failed');
+    }
+  }
+
+  // Test gửi Ctrl+S đến active window
+  Future<void> testActiveWindowSave() async {
+    print('Testing active window save...');
+    final success = await KeyboardService.testCtrlS();
+    if (success) {
+      print('✅ Test active window save successful');
+    } else {
+      print('❌ Test active window save failed');
+    }
+  }
+
+  // Test logic mới: kiểm tra active window có trong danh sách ứng dụng được chọn không
+  Future<void> testActiveWindowInSelectedApps() async {
+    print('Testing if active window is in selected apps list...');
+    
+    if (selectedApplications.isEmpty) {
+      print('❌ No applications selected');
+      return;
+    }
+    
+    // Lấy danh sách tất cả process names của các ứng dụng được chọn
+    final selectedProcessNames = <String>[];
+    for (final app in selectedApplications) {
+      final processNames = app.processName.split(', ');
+      for (final processName in processNames) {
+        selectedProcessNames.add(processName.trim());
+      }
+    }
+    
+    print('Selected process names: ${selectedProcessNames.join(', ')}');
+    
+    final isInSelected = await KeyboardService.isActiveWindowInSelectedApps(selectedProcessNames);
+    
+    if (isInSelected) {
+      print('✅ Active window is in selected apps list');
+    } else {
+      print('❌ Active window is NOT in selected apps list');
+    }
+  }
+
+  // Test gửi Ctrl+S đến active window nếu nó thuộc danh sách ứng dụng được chọn
+  Future<void> testSendCtrlSToActiveWindowIfSelected() async {
+    print('Testing send Ctrl+S to active window if selected...');
+    
+    if (selectedApplications.isEmpty) {
+      print('❌ No applications selected');
+      return;
+    }
+    
+    // Lấy danh sách tất cả process names của các ứng dụng được chọn
+    final selectedProcessNames = <String>[];
+    for (final app in selectedApplications) {
+      final processNames = app.processName.split(', ');
+      for (final processName in processNames) {
+        selectedProcessNames.add(processName.trim());
+      }
+    }
+    
+    print('Selected process names: ${selectedProcessNames.join(', ')}');
+    
+    final success = await KeyboardService.sendCtrlSToActiveWindowIfSelected(selectedProcessNames);
+    
+    if (success) {
+      print('✅ Successfully sent Ctrl+S to active window');
+    } else {
+      print('❌ Failed to send Ctrl+S to active window (not in selected apps or failed)');
+    }
+  }
+
+  // Test function: Chạy save function sau 5 giây
+  Future<void> testSaveAfter5Seconds() async {
+    print('Starting 5-second countdown for save test...');
+    
+    if (selectedApplications.isEmpty) {
+      print('❌ No applications selected');
+      await TrayService.showNotification(
+        title: 'Test Auto Save',
+        body: 'Vui lòng chọn ít nhất một ứng dụng để test',
+        useWindowsNotification: true,
+      );
+      return;
+    }
+    
+    // Hiển thị notification thông báo cho user
+    await TrayService.showNotification(
+      title: 'Test Auto Save',
+      body: 'Bạn có 5 giây để chuyển về ứng dụng cần lưu. Hệ thống sẽ tự động lưu sau 5 giây.',
+      useWindowsNotification: true,
+    );
+    
+    print('⏰ Starting 5-second countdown...');
+    print('📝 Please switch to an application that needs saving');
+    
+    // Đếm ngược
+    for (int i = 5; i > 0; i--) {
+      await Future.delayed(Duration(seconds: 1));
+      print('⏰ Countdown: $i seconds remaining...');
+    }
+    
+    print('🚀 Executing save function now...');
+    
+    // Chạy save function
+    await _doSave();
+    
+    print('✅ Test save function completed');
+    
+    // Hiển thị notification kết quả
+    await TrayService.showNotification(
+      title: 'Test Auto Save',
+      body: 'Test hoàn thành! Kiểm tra log để xem kết quả.',
+      useWindowsNotification: true,
+    );
+  }
+
+  // Test function tổng hợp: Test toàn bộ logic
+  Future<void> testCompleteLogic() async {
+    print('🧪 Starting complete logic test...');
+    
+    if (selectedApplications.isEmpty) {
+      print('❌ No applications selected');
+      await TrayService.showNotification(
+        title: 'Complete Test',
+        body: 'Vui lòng chọn ít nhất một ứng dụng để test',
+        useWindowsNotification: true,
+      );
+      return;
+    }
+    
+    // Bước 1: Kiểm tra active window
+    print('📋 Step 1: Checking active window...');
+    final selectedProcessNames = <String>[];
+    for (final app in selectedApplications) {
+      final processNames = app.processName.split(', ');
+      for (final processName in processNames) {
+        selectedProcessNames.add(processName.trim());
+      }
+    }
+    
+    final isInSelected = await KeyboardService.isActiveWindowInSelectedApps(selectedProcessNames);
+    print('Active window in selected apps: $isInSelected');
+    
+    // Bước 2: Thông báo cho user
+    await TrayService.showNotification(
+      title: 'Complete Test',
+      body: isInSelected 
+          ? 'Active window is in selected apps. Starting save test in 3 seconds...'
+          : 'Active window is NOT in selected apps. Switch to target app in 3 seconds...',
+      useWindowsNotification: true,
+    );
+    
+    // Bước 3: Đếm ngược 3 giây
+    print('⏰ Countdown: 3 seconds...');
+    await Future.delayed(Duration(seconds: 1));
+    print('⏰ Countdown: 2 seconds...');
+    await Future.delayed(Duration(seconds: 1));
+    print('⏰ Countdown: 1 second...');
+    await Future.delayed(Duration(seconds: 1));
+    
+    // Bước 4: Thực hiện save
+    print('🚀 Executing save function...');
+    await _doSave();
+    
+    print('✅ Complete test finished');
+    
+    // Bước 5: Thông báo kết quả
+    await TrayService.showNotification(
+      title: 'Complete Test',
+      body: 'Test hoàn thành! Kiểm tra log để xem kết quả chi tiết.',
+      useWindowsNotification: true,
+    );
+  }
+
+  // Test notification system
+  Future<void> testNotificationSystem() async {
+    print('🔔 Testing notification system...');
+    
+    // Test 1: Windows notification
+    await TrayService.showNotification(
+      title: 'Test Notification',
+      body: 'Đây là test notification Windows native',
+      useWindowsNotification: true,
+    );
+    
+    await Future.delayed(Duration(seconds: 2));
+    
+    // Test 2: MessageBox notification
+    await TrayService.showNotification(
+      title: 'Test MessageBox',
+      body: 'Đây là test notification MessageBox',
+      useWindowsNotification: false,
+    );
+    
+    print('✅ Notification test completed');
   }
 
   void stopAutoSave() {
@@ -652,39 +898,47 @@ class AppState extends ChangeNotifier {
     bool hasError = false;
 
     try {
-      // Gửi Ctrl+S đến tất cả ứng dụng đã chọn
+      // Lấy danh sách tất cả process names của các ứng dụng được chọn
+      final selectedProcessNames = <String>[];
       for (final app in selectedApplications) {
-        // Xử lý các process names được nhóm
         final processNames = app.processName.split(', ');
-        bool appSaved = false;
-        
-        // Thử gửi Ctrl+S cho mỗi process của ứng dụng
         for (final processName in processNames) {
-          final trimmedProcessName = processName.trim();
-          
-          // Gửi Ctrl+S đến ứng dụng
-          final success = await KeyboardService.sendCtrlSToApp(trimmedProcessName);
-          
-          final log = SaveLog(
-            appName: app.name,
-            processName: trimmedProcessName,
-            timestamp: DateTime.now(),
-            success: success,
-          );
-          saveLogs.add(log);
-          
-          if (success) {
-            appSaved = true;
-            print('Auto-saved process: $trimmedProcessName');
-            break; // Chỉ cần save thành công một process là đủ
-          } else {
-            print('Failed to save process: $trimmedProcessName');
-          }
+          selectedProcessNames.add(processName.trim());
+        }
+      }
+      
+      // Sử dụng logic mới: chỉ gửi Ctrl+S nếu active window thuộc danh sách ứng dụng được chọn
+      print('Checking if active window is in selected apps list...');
+      final success = await KeyboardService.sendCtrlSToActiveWindowIfSelected(selectedProcessNames);
+      
+      if (success) {
+        // Lấy tên của active window để log
+        final activeWindowApp = await _getActiveWindowAppName(selectedProcessNames);
+        if (activeWindowApp != null) {
+          savedApps.add(activeWindowApp);
         }
         
-        if (appSaved) {
-          savedApps.add(app.name);
-        }
+        // Tạo log cho việc save thành công
+        final log = SaveLog(
+          appName: activeWindowApp ?? 'Active Window',
+          processName: 'Active Window',
+          timestamp: DateTime.now(),
+          success: true,
+        );
+        saveLogs.add(log);
+        
+        print('✅ Auto-saved active window successfully');
+      } else {
+        print('❌ Active window is not in selected apps list or save failed');
+        
+        // Tạo log cho việc không save
+        final log = SaveLog(
+          appName: 'Active Window',
+          processName: 'Active Window',
+          timestamp: DateTime.now(),
+          success: false,
+        );
+        saveLogs.add(log);
       }
       
       notifyListeners();
@@ -694,6 +948,7 @@ class AppState extends ChangeNotifier {
         await TrayService.showAutoSaveNotification(
           savedApps: savedApps,
           success: savedApps.isNotEmpty,
+          useWindowsNotification: useWindowsNotification,
         );
       }
       
@@ -702,18 +957,14 @@ class AppState extends ChangeNotifier {
       hasError = true;
       
       // Add error logs
-      for (final app in selectedApplications) {
-        final processNames = app.processName.split(', ');
-        for (final processName in processNames) {
-          final log = SaveLog(
-            appName: app.name,
-            processName: processName.trim(),
-            timestamp: DateTime.now(),
-            success: false,
-          );
-          saveLogs.add(log);
-        }
-      }
+      final log = SaveLog(
+        appName: 'Active Window',
+        processName: 'Active Window',
+        timestamp: DateTime.now(),
+        success: false,
+      );
+      saveLogs.add(log);
+      
       notifyListeners();
 
       // Hiển thị notification lỗi
@@ -723,6 +974,82 @@ class AppState extends ChangeNotifier {
           success: false,
         );
       }
+    }
+  }
+
+  /// Lấy tên ứng dụng của active window
+  Future<String?> _getActiveWindowAppName(List<String> selectedProcessNames) async {
+    try {
+      final result = await Process.run('powershell', [
+        '-Command',
+        '''
+        Add-Type -TypeDefinition @"
+        using System;
+        using System.Runtime.InteropServices;
+        public class Win32 {
+            [DllImport("user32.dll")]
+            public static extern IntPtr GetForegroundWindow();
+            
+            [DllImport("user32.dll")]
+            public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+            
+            [DllImport("kernel32.dll")]
+            public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+            
+            [DllImport("kernel32.dll")]
+            public static extern bool QueryFullProcessImageName(IntPtr hprocess, int dwFlags, System.Text.StringBuilder lpExeName, ref int lpdwSize);
+        }
+"@
+
+        \$activeHwnd = [Win32]::GetForegroundWindow()
+        if (\$activeHwnd -eq [IntPtr]::Zero) {
+            Write-Host "No active window found"
+            exit 1
+        }
+        
+        \$processId = 0
+        [Win32]::GetWindowThreadProcessId(\$activeHwnd, [ref] \$processId)
+        
+        if (\$processId -eq 0) {
+            Write-Host "Could not get process ID for active window"
+            exit 1
+        }
+        
+        \$processHandle = [Win32]::OpenProcess(0x1000, \$false, \$processId)
+        if (\$processHandle -eq [IntPtr]::Zero) {
+            Write-Host "Could not open process handle"
+            exit 1
+        }
+        
+        \$exeName = New-Object System.Text.StringBuilder(260)
+        \$size = 260
+        \$result = [Win32]::QueryFullProcessImageName(\$processHandle, 0, \$exeName, [ref] \$size)
+        
+        if (\$result) {
+            \$fullPath = \$exeName.ToString()
+            \$processName = [System.IO.Path]::GetFileName(\$fullPath)
+            Write-Host "Active window process: \$processName"
+        } else {
+            Write-Host "Could not get process name"
+            exit 1
+        }
+        '''
+      ]);
+      
+      if (result.exitCode == 0) {
+        final output = result.stdout.toString();
+        final lines = output.split('\n');
+        for (final line in lines) {
+          if (line.contains('Active window process:')) {
+            final processName = line.split('Active window process:').last.trim();
+            return processName;
+          }
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error getting active window app name: $e');
+      return null;
     }
   }
 }

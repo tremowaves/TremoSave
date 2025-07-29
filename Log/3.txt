@@ -1,0 +1,51 @@
+ Test Buttons với Logic Đầy Đủ:
+1. Test Ctrl+S (Icon: play_arrow)
+Chức năng: Test gửi Ctrl+S đơn giản đến active window
+Logic: Gọi testActiveWindowSave() và hiển thị SnackBar thông báo kết quả
+Màu: Mặc định
+2. Test Active Window Check (Icon: check_circle)
+Chức năng: Kiểm tra active window có trong danh sách ứng dụng được chọn không
+Logic: Gọi testActiveWindowInSelectedApps() và hiển thị SnackBar thông báo
+Màu: Mặc định
+3. Test Smart Save (Icon: save)
+Chức năng: Test logic mới - gửi Ctrl+S chỉ khi active window thuộc danh sách được chọn
+Logic: Gọi testSendCtrlSToActiveWindowIfSelected() và hiển thị SnackBar thông báo
+Màu: Mặc định
+4. Test Save After 5s (Icon: timer)
+Chức năng: Test save function sau 5 giây với countdown
+Logic:
+Hiển thị SnackBar màu cam thông báo bắt đầu test
+Gọi testSaveAfter5Seconds() với countdown và notification
+Thông báo cho user chuyển về ứng dụng cần lưu
+Màu: Orange
+5. Complete Logic Test (Icon: science)
+Chức năng: Test toàn bộ logic một cách có hệ thống
+Logic:
+Hiển thị SnackBar màu tím thông báo bắt đầu
+Kiểm tra active window
+Thông báo kết quả kiểm tra
+Đếm ngược 3 giây
+Thực hiện save function
+Hiển thị notification kết quả
+Màu: Purple
+6. Test Notifications (Icon: notifications)
+Chức năng: Test hệ thống notification
+Logic:
+Hiển thị SnackBar màu xanh thông báo
+Test Windows native notification
+Test MessageBox notification
+So sánh hai loại notification
+Màu: Blue
+🎯 Cách sử dụng:
+Chọn ứng dụng bạn muốn test trong danh sách
+Nhấn test button tương ứng với chức năng muốn test
+Theo dõi thông báo trong UI và console
+Kiểm tra kết quả trong log panel
+📋 Test Flow:
+Test Ctrl+S: Test cơ bản gửi Ctrl+S
+Active Window Check: Kiểm tra logic nhận diện active window
+Smart Save: Test logic mới (chỉ lưu khi active window được chọn)
+Save After 5s: Test với countdown và thông báo rõ ràng
+Complete Logic: Test toàn bộ hệ thống một cách có hệ thống
+Notifications: Test hệ thống thông báo
+Mỗi button đều có logic riêng và sẽ hiển thị thông báo phù hợp cho user!
