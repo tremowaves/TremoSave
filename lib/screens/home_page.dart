@@ -72,60 +72,7 @@ class HomePage extends StatelessWidget {
                    },
                    tooltip: 'Cài đặt',
                  ),
-                 IconButton(
-                   icon: Icon(
-                     Icons.play_arrow,
-                     size: isSmallScreen ? 20 : 24,
-                   ),
-                   onPressed: () async {
-                     // Test Ctrl+S đơn giản
-                     await state.testActiveWindowSave();
-                     // Hiển thị thông báo kết quả
-                     ScaffoldMessenger.of(context).showSnackBar(
-                       SnackBar(
-                         content: Text('Test Ctrl+S completed. Check console for details.'),
-                         duration: Duration(seconds: 2),
-                       ),
-                     );
-                   },
-                   tooltip: 'Test Ctrl+S',
-                 ),
-                 IconButton(
-                   icon: Icon(
-                     Icons.check_circle,
-                     size: isSmallScreen ? 20 : 24,
-                   ),
-                   onPressed: () async {
-                     // Test kiểm tra active window
-                     await state.testActiveWindowInSelectedApps();
-                     // Hiển thị thông báo kết quả
-                     ScaffoldMessenger.of(context).showSnackBar(
-                       SnackBar(
-                         content: Text('Active window check completed. Check console for details.'),
-                         duration: Duration(seconds: 2),
-                       ),
-                     );
-                   },
-                   tooltip: 'Test Active Window Check',
-                 ),
-                 IconButton(
-                   icon: Icon(
-                     Icons.save,
-                     size: isSmallScreen ? 20 : 24,
-                   ),
-                   onPressed: () async {
-                     // Test smart save
-                     await state.testSendCtrlSToActiveWindowIfSelected();
-                     // Hiển thị thông báo kết quả
-                     ScaffoldMessenger.of(context).showSnackBar(
-                       SnackBar(
-                         content: Text('Smart save test completed. Check console for details.'),
-                         duration: Duration(seconds: 2),
-                       ),
-                     );
-                   },
-                   tooltip: 'Test Smart Save',
-                 ),
+
                  IconButton(
                    icon: Icon(
                      Icons.timer,
@@ -145,26 +92,6 @@ class HomePage extends StatelessWidget {
                      await state.testSaveAfter5Seconds();
                    },
                    tooltip: 'Test Save After 5s',
-                 ),
-                 IconButton(
-                   icon: Icon(
-                     Icons.science,
-                     size: isSmallScreen ? 20 : 24,
-                   ),
-                   onPressed: () async {
-                     // Test logic tổng hợp
-                     ScaffoldMessenger.of(context).showSnackBar(
-                       SnackBar(
-                         content: Text('Starting complete logic test...'),
-                         duration: Duration(seconds: 2),
-                         backgroundColor: Colors.purple,
-                       ),
-                     );
-                     
-                     // Bắt đầu test function tổng hợp
-                     await state.testCompleteLogic();
-                   },
-                   tooltip: 'Complete Logic Test',
                  ),
                  IconButton(
                    icon: Icon(

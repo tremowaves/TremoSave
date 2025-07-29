@@ -26,7 +26,6 @@ class AppState extends ChangeNotifier {
   bool autoRun = false;
   bool minimizeToTray = false;
   bool showNotifications = true;
-  bool useWindowsNotification = true;
 
   Timer? _timer;
   
@@ -564,7 +563,6 @@ class AppState extends ChangeNotifier {
         autoRun: autoRun,
         minimizeToTray: minimizeToTray,
         showNotifications: showNotifications,
-        useWindowsNotification: useWindowsNotification,
       );
     } catch (e) {
       print('Error saving settings: $e');
@@ -639,11 +637,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setUseWindowsNotification(bool value) {
-    useWindowsNotification = value;
-    saveSettings();
-    notifyListeners();
-  }
+  // Removed: setUseWindowsNotification method - no longer needed
 
   Future<void> startAutoSave() async {
     if (selectedApplications.isEmpty) return;
@@ -760,20 +754,18 @@ class AppState extends ChangeNotifier {
     
     if (selectedApplications.isEmpty) {
       print('❌ No applications selected');
-      await TrayService.showNotification(
-        title: 'Test Auto Save',
-        body: 'Vui lòng chọn ít nhất một ứng dụng để test',
-        useWindowsNotification: true,
-      );
+              await TrayService.showNotification(
+          title: 'Test Auto Save',
+          body: 'Vui lòng chọn ít nhất một ứng dụng để test',
+        );
       return;
     }
     
     // Hiển thị notification thông báo cho user
-    await TrayService.showNotification(
-      title: 'Test Auto Save',
-      body: 'Bạn có 5 giây để chuyển về ứng dụng cần lưu. Hệ thống sẽ tự động lưu sau 5 giây.',
-      useWindowsNotification: true,
-    );
+            await TrayService.showNotification(
+          title: 'Test Auto Save',
+          body: 'Bạn có 5 giây để chuyển về ứng dụng cần lưu. Hệ thống sẽ tự động lưu sau 5 giây.',
+        );
     
     print('⏰ Starting 5-second countdown...');
     print('📝 Please switch to an application that needs saving');
@@ -792,11 +784,10 @@ class AppState extends ChangeNotifier {
     print('✅ Test save function completed');
     
     // Hiển thị notification kết quả
-    await TrayService.showNotification(
-      title: 'Test Auto Save',
-      body: 'Test hoàn thành! Kiểm tra log để xem kết quả.',
-      useWindowsNotification: true,
-    );
+            await TrayService.showNotification(
+          title: 'Test Auto Save',
+          body: 'Test hoàn thành! Kiểm tra log để xem kết quả.',
+        );
   }
 
   // Test function tổng hợp: Test toàn bộ logic
@@ -808,7 +799,6 @@ class AppState extends ChangeNotifier {
       await TrayService.showNotification(
         title: 'Complete Test',
         body: 'Vui lòng chọn ít nhất một ứng dụng để test',
-        useWindowsNotification: true,
       );
       return;
     }
@@ -827,13 +817,12 @@ class AppState extends ChangeNotifier {
     print('Active window in selected apps: $isInSelected');
     
     // Bước 2: Thông báo cho user
-    await TrayService.showNotification(
-      title: 'Complete Test',
-      body: isInSelected 
-          ? 'Active window is in selected apps. Starting save test in 3 seconds...'
-          : 'Active window is NOT in selected apps. Switch to target app in 3 seconds...',
-      useWindowsNotification: true,
-    );
+          await TrayService.showNotification(
+        title: 'Complete Test',
+        body: isInSelected 
+            ? 'Active window is in selected apps. Starting save test in 3 seconds...'
+            : 'Active window is NOT in selected apps. Switch to target app in 3 seconds...',
+      );
     
     // Bước 3: Đếm ngược 3 giây
     print('⏰ Countdown: 3 seconds...');
@@ -853,7 +842,6 @@ class AppState extends ChangeNotifier {
     await TrayService.showNotification(
       title: 'Complete Test',
       body: 'Test hoàn thành! Kiểm tra log để xem kết quả chi tiết.',
-      useWindowsNotification: true,
     );
   }
 
@@ -865,7 +853,6 @@ class AppState extends ChangeNotifier {
     await TrayService.showNotification(
       title: 'Test Notification',
       body: 'Đây là test notification Windows native',
-      useWindowsNotification: true,
     );
     
     await Future.delayed(Duration(seconds: 2));
@@ -874,7 +861,6 @@ class AppState extends ChangeNotifier {
     await TrayService.showNotification(
       title: 'Test MessageBox',
       body: 'Đây là test notification MessageBox',
-      useWindowsNotification: false,
     );
     
     print('✅ Notification test completed');
@@ -948,7 +934,6 @@ class AppState extends ChangeNotifier {
         await TrayService.showAutoSaveNotification(
           savedApps: savedApps,
           success: savedApps.isNotEmpty,
-          useWindowsNotification: useWindowsNotification,
         );
       }
       

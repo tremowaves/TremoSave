@@ -32,6 +32,25 @@ set(CMAKE_CXX_FLAGS_PROFILE "${CMAKE_CXX_FLAGS_RELEASE}")
 # Use Unicode for all projects.
 add_definitions(-DUNICODE -D_UNICODE)
 
+# Add ATL include paths
+if(MSVC)
+  # Try to find ATL headers in different possible locations
+  set(ATL_PATHS
+    "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/atlmfc/include"
+    "C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/14.44.35207/atlmfc/include"
+    "C:/Program Files (x86)/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/atlmfc/include"
+    "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/atlmfc/include"
+  )
+  
+  foreach(ATL_PATH ${ATL_PATHS})
+    if(EXISTS ${ATL_PATH})
+      include_directories(${ATL_PATH})
+      message(STATUS "Found ATL headers at: ${ATL_PATH}")
+      break()
+    endif()
+  endforeach()
+endif()
+
 # Compilation settings that should be applied to most targets.
 #
 # Be cautious about adding new options here, as plugins use this function by

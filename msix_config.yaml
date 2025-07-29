@@ -1,0 +1,9 @@
+name: "Tremo Save Setup"
+display_name: "Tremo Save Setup"
+publisher_display_name: "Tremo"
+identity_name: "TremoSave"
+msix_version: "1.0.0.0"
+logo_path: "assets/AppIcon.ico"
+capabilities: "internetClient"
+store: true
+publisher: "CN=Tremo" 

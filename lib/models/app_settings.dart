@@ -8,7 +8,7 @@ class AppSettings {
   static const String _keyAutoRun = 'auto_run';
   static const String _keyMinimizeToTray = 'minimize_to_tray';
   static const String _keyShowNotifications = 'show_notifications';
-  static const String _keyUseWindowsNotification = 'use_windows_notification';
+  // Removed: useWindowsNotification setting - no longer needed
 
   // Lưu danh sách ứng dụng đã chọn
   static Future<void> saveSelectedApps(List<String> appNames) async {
@@ -72,15 +72,7 @@ class AppSettings {
     return prefs.getBool(_keyShowNotifications) ?? true;
   }
 
-  static Future<void> saveUseWindowsNotification(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keyUseWindowsNotification, value);
-  }
-
-  static Future<bool> getUseWindowsNotification() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keyUseWindowsNotification) ?? true;
-  }
+  // Removed: useWindowsNotification methods - no longer needed
 
   // Lưu tất cả settings
   static Future<void> saveAllSettings({
@@ -89,14 +81,12 @@ class AppSettings {
     required bool autoRun,
     required bool minimizeToTray,
     required bool showNotifications,
-    required bool useWindowsNotification,
   }) async {
     await saveSelectedApps(selectedApps);
     await saveInterval(interval);
     await saveAutoRun(autoRun);
     await saveMinimizeToTray(minimizeToTray);
     await saveShowNotifications(showNotifications);
-    await saveUseWindowsNotification(useWindowsNotification);
   }
 
   // Load tất cả settings
@@ -107,7 +97,6 @@ class AppSettings {
       'autoRun': await getAutoRun(),
       'minimizeToTray': await getMinimizeToTray(),
       'showNotifications': await getShowNotifications(),
-      'useWindowsNotification': await getUseWindowsNotification(),
     };
   }
 } 

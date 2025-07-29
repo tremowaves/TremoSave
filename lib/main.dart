@@ -3,10 +3,17 @@ import 'package:auto_saver/screens/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:provider/provider.dart';
+import 'package:local_notifier/local_notifier.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await hotKeyManager.unregisterAll();
+  
+  // Khởi tạo local_notifier
+  await localNotifier.setup(
+    appName: 'Tremo Save',
+  );
+  
   runApp(
     ChangeNotifierProvider(
       create: (_) => AppState(),

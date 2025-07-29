@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:win32/win32.dart';
 import 'package:auto_saver/models/app_settings.dart';
+import 'package:local_notifier/local_notifier.dart';
 
 class TrayService {
   static const String _trayIconPath = 'assets/tray_icon.png';
@@ -41,46 +42,19 @@ class TrayService {
     }
   }
 
-  static Future<void> showNotification({
+    static Future<void> showNotification({
     required String title,
     required String body,
     String? iconPath,
-    bool useWindowsNotification = true,
   }) async {
     try {
-      if (useWindowsNotification) {
-        // Sử dụng Windows native toast notification
-        final result = await Process.run('powershell', [
-          '-Command',
-          '''
-          # Kiểm tra xem có module BurntToast không
-          if (Get-Module -ListAvailable -Name BurntToast) {
-              Import-Module BurntToast
-              New-BurntToastNotification -Text "$title", "$body" -Silent
-          } else {
-              # Fallback: sử dụng Windows Forms MessageBox
-              Add-Type -AssemblyName System.Windows.Forms
-              [System.Windows.Forms.MessageBox]::Show("$body", "$title", [System.Windows.Forms.MessageBoxButton]::OK, [System.Windows.Forms.MessageBoxImage]::Information)
-          }
-          '''
-        ]);
-        
-        if (result.exitCode != 0) {
-          print('Failed to show Windows notification: ${result.stderr}');
-          // Fallback: sử dụng simple popup
-          await Process.run('powershell', [
-            '-Command',
-            'Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show("$body", "$title", [System.Windows.Forms.MessageBoxButton]::OK, [System.Windows.Forms.MessageBoxImage]::Information)'
-          ]);
-        }
-      } else {
-        // Sử dụng Windows message box để hiển thị notification
-        final result = await Process.run('powershell', [
-          '-Command',
-          'Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show("$body", "$title", [System.Windows.Forms.MessageBoxButton]::OK, [System.Windows.Forms.MessageBoxImage]::Information)'
-        ]);
-      }
+      // Sử dụng local_notifier cho Windows toast notification
+      final notification = LocalNotification(
+        title: title,
+        body: body,
+      );
       
+      await notification.show();
       print('Notification shown: $title - $body');
     } catch (e) {
       print('Error showing notification: $e');
@@ -92,7 +66,6 @@ class TrayService {
   static Future<void> showAutoSaveNotification({
     required List<String> savedApps,
     required bool success,
-    bool useWindowsNotification = true,
   }) async {
     final settings = await AppSettings.loadAllSettings();
     if (!settings['showNotifications']) return;
@@ -105,7 +78,6 @@ class TrayService {
     await showNotification(
       title: title,
       body: body,
-      useWindowsNotification: useWindowsNotification,
     );
   }
 
