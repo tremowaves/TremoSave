@@ -31,10 +31,26 @@ class AppState extends ChangeNotifier {
       // Lọc chỉ các ứng dụng có cửa sổ (loại bỏ process ngầm)
       final windowedApps = await _getWindowedApplications(processes);
       
-      applications = windowedApps.map((process) => AppInfo(
-        name: _getDisplayName(process),
-        processName: process,
-      )).toList();
+      // Tạo map để nhóm các ứng dụng trùng lặp
+      final Map<String, List<String>> groupedApps = {};
+      
+      for (final process in windowedApps) {
+        final displayName = _getDisplayName(process);
+        if (groupedApps.containsKey(displayName)) {
+          groupedApps[displayName]!.add(process);
+        } else {
+          groupedApps[displayName] = [process];
+        }
+      }
+      
+      // Tạo danh sách ứng dụng đã nhóm
+      applications = groupedApps.entries.map((entry) {
+        final processNames = entry.value.join(', ');
+        return AppInfo(
+          name: entry.key,
+          processName: processNames,
+        );
+      }).toList();
       
       // Sắp xếp theo tên hiển thị
       applications.sort((a, b) => a.name.compareTo(b.name));
@@ -69,6 +85,65 @@ class AppState extends ChangeNotifier {
       'utorrent.exe', 'qbittorrent.exe',
       'ccleaner.exe', 'malwarebytes.exe', 'avast.exe',
       'teamviewer.exe', 'anydesk.exe', 'ultraviewer.exe',
+      // Thêm Reaper và các ứng dụng audio khác
+      'reaper.exe', 'reaper64.exe', 'reaper32.exe',
+      'audacity.exe', 'flstudio.exe', 'ableton.exe', 'protools.exe',
+      'cubase.exe', 'logic.exe', 'garageband.exe',
+      'cakewalk.exe', 'sonar.exe', 'studioone.exe',
+      'bitwig.exe', 'reason.exe', 'live.exe',
+      
+      // 2D Graphics & Design
+      'photoshop.exe', 'illustrator.exe', 'indesign.exe', 'xd.exe', 'figma.exe',
+      'sketch.exe', 'affinitydesigner.exe', 'affinityphoto.exe', 'affinitypublisher.exe',
+      'gimp.exe', 'inkscape.exe', 'krita.exe', 'paint.net.exe', 'paint.exe',
+      'coreldraw.exe', 'xara.exe', 'serif.exe', 'canva.exe',
+      
+      // 3D Modeling & Animation
+      'blender.exe', 'maya.exe', '3dsmax.exe', 'cinema4d.exe', 'houdini.exe',
+      'zbrush.exe', 'mudbox.exe', 'sketchup.exe', 'rhino.exe', 'fusion360.exe',
+      'solidworks.exe', 'autocad.exe', 'revit.exe', 'archicad.exe', 'vectorworks.exe',
+      'lightwave.exe', 'modo.exe', 'carrara.exe', 'daz3d.exe', 'poser.exe',
+      'vray.exe', 'corona.exe', 'arnold.exe', 'redshift.exe', 'octane.exe',
+      
+      // Video Editing & VFX
+      'premiere.exe', 'afterfx.exe', 'audition.exe', 'mediaencoder.exe',
+      'davinci.exe', 'resolve.exe', 'finalcut.exe', 'vegas.exe', 'edius.exe',
+      'avid.exe', 'mediacomposer.exe', 'nuke.exe', 'fusion.exe', 'flame.exe',
+      'motion.exe', 'compressor.exe', 'color.exe', 'cinema.exe',
+      'hitfilm.exe', 'camtasia.exe', 'obs.exe', 'streamlabs.exe', 'xsplit.exe',
+      
+      // Game Engines & Development
+      'unity.exe', 'unreal.exe', 'godot.exe', 'gamemaker.exe', 'construct.exe',
+      'rpgmaker.exe', 'renpy.exe', 'twine.exe', 'scratch.exe', 'stencyl.exe',
+      'cocos2d.exe', 'corona.exe', 'love.exe', 'sfml.exe', 'sdl.exe',
+      'monogame.exe', 'xna.exe', 'cryengine.exe', 'source.exe', 'idtech.exe',
+      
+      // Programming & Development
+      'code.exe', 'cursor.exe', 'vscode.exe', 'sublime.exe', 'atom.exe',
+      'notepad++.exe', 'brackets.exe', 'webstorm.exe', 'intellij.exe', 'eclipse.exe',
+      'netbeans.exe', 'visualstudio.exe', 'vs.exe', 'devcpp.exe', 'codeblocks.exe',
+      'qtcreator.exe', 'androidstudio.exe', 'xcode.exe', 'xampp.exe', 'wamp.exe',
+      'node.exe', 'python.exe', 'java.exe', 'javac.exe', 'gcc.exe', 'cl.exe',
+      
+      // Office & Productivity
+      'winword.exe', 'excel.exe', 'powerpnt.exe', 'outlook.exe', 'access.exe',
+      'publisher.exe', 'onenote.exe', 'teams.exe', 'skype.exe', 'lync.exe',
+      'libreoffice.exe', 'openoffice.exe', 'wps.exe', 'kingsoft.exe',
+      'googlechrome.exe', 'chrome.exe', 'firefox.exe', 'msedge.exe', 'opera.exe',
+      'brave.exe', 'safari.exe', 'vivaldi.exe', 'tor.exe',
+      
+      // File Management & Utilities
+      'explorer.exe', 'totalcommander.exe', 'freecommander.exe', 'xyplorer.exe',
+      'winrar.exe', '7zfm.exe', 'winzip.exe', 'peazip.exe', 'bandizip.exe',
+      'utorrent.exe', 'qbittorrent.exe', 'transmission.exe', 'deluge.exe',
+      'ccleaner.exe', 'malwarebytes.exe', 'avast.exe', 'norton.exe', 'mcafee.exe',
+      'teamviewer.exe', 'anydesk.exe', 'ultraviewer.exe', 'logmein.exe',
+      
+      // Creative & Media
+      'spotify.exe', 'vlc.exe', 'potplayer.exe', 'mpc.exe', 'kodi.exe',
+      'itunes.exe', 'windowsmediaplayer.exe', 'wmp.exe', 'quicktime.exe',
+      'discord.exe', 'telegram.exe', 'whatsapp.exe', 'slack.exe', 'zoom.exe',
+      'skype.exe', 'teams.exe', 'webex.exe', 'gotomeeting.exe',
     ];
 
     return allProcesses.where((process) {
@@ -142,6 +217,234 @@ class AppState extends ChangeNotifier {
       'teamviewer.exe': 'TeamViewer',
       'anydesk.exe': 'AnyDesk',
       'ultraviewer.exe': 'UltraViewer',
+      
+      // Audio applications
+      'reaper.exe': 'REAPER',
+      'reaper64.exe': 'REAPER (64-bit)',
+      'reaper32.exe': 'REAPER (32-bit)',
+      'audacity.exe': 'Audacity',
+      'flstudio.exe': 'FL Studio',
+      'ableton.exe': 'Ableton Live',
+      'protools.exe': 'Pro Tools',
+      'cubase.exe': 'Cubase',
+      'logic.exe': 'Logic Pro',
+      'garageband.exe': 'GarageBand',
+      'cakewalk.exe': 'Cakewalk',
+      'sonar.exe': 'Cakewalk Sonar',
+      'studioone.exe': 'Studio One',
+      'bitwig.exe': 'Bitwig Studio',
+      'reason.exe': 'Reason',
+      'live.exe': 'Ableton Live',
+      
+      // 2D Graphics & Design
+      'photoshop.exe': 'Adobe Photoshop',
+      'illustrator.exe': 'Adobe Illustrator',
+      'indesign.exe': 'Adobe InDesign',
+      'xd.exe': 'Adobe XD',
+      'figma.exe': 'Figma',
+      'sketch.exe': 'Sketch',
+      'affinitydesigner.exe': 'Affinity Designer',
+      'affinityphoto.exe': 'Affinity Photo',
+      'affinitypublisher.exe': 'Affinity Publisher',
+      'gimp.exe': 'GIMP',
+      'inkscape.exe': 'Inkscape',
+      'krita.exe': 'Krita',
+      'paint.net.exe': 'Paint.NET',
+      'paint.exe': 'Paint',
+      'coreldraw.exe': 'CorelDRAW',
+      'xara.exe': 'Xara Designer',
+      'serif.exe': 'Serif Affinity',
+      'canva.exe': 'Canva',
+      
+      // 3D Modeling & Animation
+      'blender.exe': 'Blender',
+      'maya.exe': 'Autodesk Maya',
+      '3dsmax.exe': '3ds Max',
+      'cinema4d.exe': 'Cinema 4D',
+      'houdini.exe': 'Houdini',
+      'zbrush.exe': 'ZBrush',
+      'mudbox.exe': 'Autodesk Mudbox',
+      'sketchup.exe': 'SketchUp',
+      'rhino.exe': 'Rhino 3D',
+      'fusion360.exe': 'Fusion 360',
+      'solidworks.exe': 'SolidWorks',
+      'autocad.exe': 'AutoCAD',
+      'revit.exe': 'Autodesk Revit',
+      'archicad.exe': 'ArchiCAD',
+      'vectorworks.exe': 'Vectorworks',
+      'lightwave.exe': 'LightWave 3D',
+      'modo.exe': 'Modo',
+      'carrara.exe': 'Carrara',
+      'daz3d.exe': 'DAZ 3D Studio',
+      'poser.exe': 'Poser',
+      'vray.exe': 'V-Ray',
+      'corona.exe': 'Corona Renderer',
+      'arnold.exe': 'Arnold Renderer',
+      'redshift.exe': 'Redshift',
+      'octane.exe': 'Octane Render',
+      
+      // Video Editing & VFX
+      'premiere.exe': 'Adobe Premiere Pro',
+      'afterfx.exe': 'Adobe After Effects',
+      'audition.exe': 'Adobe Audition',
+      'mediaencoder.exe': 'Adobe Media Encoder',
+      'davinci.exe': 'DaVinci Resolve',
+      'resolve.exe': 'DaVinci Resolve',
+      'finalcut.exe': 'Final Cut Pro',
+      'vegas.exe': 'Vegas Pro',
+      'edius.exe': 'EDIUS',
+      'avid.exe': 'Avid Media Composer',
+      'mediacomposer.exe': 'Avid Media Composer',
+      'nuke.exe': 'Nuke',
+      'fusion.exe': 'Blackmagic Fusion',
+      'flame.exe': 'Autodesk Flame',
+      'motion.exe': 'Motion',
+      'compressor.exe': 'Compressor',
+      'color.exe': 'DaVinci Resolve Color',
+      'cinema.exe': 'Cinema 4D',
+      'hitfilm.exe': 'HitFilm',
+      'camtasia.exe': 'Camtasia',
+      'obs.exe': 'OBS Studio',
+      'streamlabs.exe': 'Streamlabs OBS',
+      'xsplit.exe': 'XSplit Broadcaster',
+      
+      // Game Engines & Development
+      'unity.exe': 'Unity',
+      'unreal.exe': 'Unreal Engine',
+      'godot.exe': 'Godot Engine',
+      'gamemaker.exe': 'GameMaker Studio',
+      'construct.exe': 'Construct',
+      'rpgmaker.exe': 'RPG Maker',
+      'renpy.exe': 'Ren\'Py',
+      'twine.exe': 'Twine',
+      'scratch.exe': 'Scratch',
+      'stencyl.exe': 'Stencyl',
+      'cocos2d.exe': 'Cocos2d',
+      'love.exe': 'LÖVE',
+      'sfml.exe': 'SFML',
+      'sdl.exe': 'SDL',
+      'monogame.exe': 'MonoGame',
+      'xna.exe': 'XNA Framework',
+      'cryengine.exe': 'CryEngine',
+      'source.exe': 'Source Engine',
+      'idtech.exe': 'id Tech Engine',
+      
+      // Programming & Development
+      'code.exe': 'Visual Studio Code',
+      'cursor.exe': 'Cursor Editor',
+      'vscode.exe': 'Visual Studio Code',
+      'sublime.exe': 'Sublime Text',
+      'atom.exe': 'Atom',
+      'notepad++.exe': 'Notepad++',
+      'brackets.exe': 'Brackets',
+      'webstorm.exe': 'WebStorm',
+      'intellij.exe': 'IntelliJ IDEA',
+      'eclipse.exe': 'Eclipse',
+      'netbeans.exe': 'NetBeans',
+      'visualstudio.exe': 'Visual Studio',
+      'vs.exe': 'Visual Studio',
+      'devcpp.exe': 'Dev-C++',
+      'codeblocks.exe': 'Code::Blocks',
+      'qtcreator.exe': 'Qt Creator',
+      'androidstudio.exe': 'Android Studio',
+      'xcode.exe': 'Xcode',
+      'xampp.exe': 'XAMPP',
+      'wamp.exe': 'WAMP',
+      'node.exe': 'Node.js',
+      'python.exe': 'Python',
+      'java.exe': 'Java Runtime',
+      'javac.exe': 'Java Compiler',
+      'gcc.exe': 'GCC Compiler',
+      'cl.exe': 'MSVC Compiler',
+      
+      // Office & Productivity
+      'winword.exe': 'Microsoft Word',
+      'excel.exe': 'Microsoft Excel',
+      'powerpnt.exe': 'Microsoft PowerPoint',
+      'outlook.exe': 'Microsoft Outlook',
+      'access.exe': 'Microsoft Access',
+      'publisher.exe': 'Microsoft Publisher',
+      'onenote.exe': 'Microsoft OneNote',
+      'teams.exe': 'Microsoft Teams',
+      'skype.exe': 'Skype',
+      'lync.exe': 'Lync',
+      'libreoffice.exe': 'LibreOffice',
+      'openoffice.exe': 'Apache OpenOffice',
+      'wps.exe': 'WPS Office',
+      'kingsoft.exe': 'Kingsoft Office',
+      'googlechrome.exe': 'Google Chrome',
+      'chrome.exe': 'Google Chrome',
+      'firefox.exe': 'Mozilla Firefox',
+      'msedge.exe': 'Microsoft Edge',
+      'opera.exe': 'Opera Browser',
+      'brave.exe': 'Brave Browser',
+      'safari.exe': 'Safari',
+      'vivaldi.exe': 'Vivaldi Browser',
+      'tor.exe': 'Tor Browser',
+      
+      // File Management & Utilities
+      'explorer.exe': 'File Explorer',
+      'totalcommander.exe': 'Total Commander',
+      'freecommander.exe': 'FreeCommander',
+      'xyplorer.exe': 'XYplorer',
+      'winrar.exe': 'WinRAR',
+      '7zfm.exe': '7-Zip',
+      'winzip.exe': 'WinZip',
+      'peazip.exe': 'PeaZip',
+      'bandizip.exe': 'Bandizip',
+      'utorrent.exe': 'uTorrent',
+      'qbittorrent.exe': 'qBittorrent',
+      'transmission.exe': 'Transmission',
+      'deluge.exe': 'Deluge',
+      'ccleaner.exe': 'CCleaner',
+      'malwarebytes.exe': 'Malwarebytes',
+      'avast.exe': 'Avast Antivirus',
+      'norton.exe': 'Norton Antivirus',
+      'mcafee.exe': 'McAfee Antivirus',
+      'teamviewer.exe': 'TeamViewer',
+      'anydesk.exe': 'AnyDesk',
+      'ultraviewer.exe': 'UltraViewer',
+      'logmein.exe': 'LogMeIn',
+      
+      // Creative & Media
+      'spotify.exe': 'Spotify',
+      'vlc.exe': 'VLC Media Player',
+      'potplayer.exe': 'PotPlayer',
+      'mpc.exe': 'Media Player Classic',
+      'kodi.exe': 'Kodi',
+      'itunes.exe': 'iTunes',
+      'windowsmediaplayer.exe': 'Windows Media Player',
+      'wmp.exe': 'Windows Media Player',
+      'quicktime.exe': 'QuickTime',
+      'discord.exe': 'Discord',
+      'telegram.exe': 'Telegram',
+      'whatsapp.exe': 'WhatsApp',
+      'slack.exe': 'Slack',
+      'zoom.exe': 'Zoom',
+      'skype.exe': 'Skype',
+      'teams.exe': 'Microsoft Teams',
+      'webex.exe': 'Cisco Webex',
+      'gotomeeting.exe': 'GoToMeeting',
+      
+      // Gaming & Entertainment
+      'steam.exe': 'Steam',
+      'epicgameslauncher.exe': 'Epic Games Launcher',
+      'origin.exe': 'Origin',
+      'uplay.exe': 'Ubisoft Connect',
+      'battle.net.exe': 'Battle.net',
+      'minecraft.exe': 'Minecraft',
+      'roblox.exe': 'Roblox',
+      'fortnite.exe': 'Fortnite',
+      'leagueoflegends.exe': 'League of Legends',
+      'valorant.exe': 'Valorant',
+      'csgo.exe': 'Counter-Strike: Global Offensive',
+      'dota2.exe': 'Dota 2',
+      'overwatch.exe': 'Overwatch',
+      'apex.exe': 'Apex Legends',
+      'pubg.exe': 'PUBG',
+      'gta5.exe': 'Grand Theft Auto V',
+      'reddeadredemption2.exe': 'Red Dead Redemption 2',
+      'cyberpunk2077.exe': 'Cyberpunk 2077',
     };
 
     final lowerProcess = processName.toLowerCase();
@@ -176,6 +479,14 @@ class AppState extends ChangeNotifier {
       applications[index].toggleSelection();
       notifyListeners();
     }
+  }
+
+  // Thêm method để lấy tất cả process names của một ứng dụng
+  List<String> getProcessNamesForApp(int index) {
+    if (index >= 0 && index < applications.length) {
+      return applications[index].processName.split(', ');
+    }
+    return [];
   }
 
   void selectAllApplications() {
@@ -260,14 +571,18 @@ class AppState extends ChangeNotifier {
       
       // Add logs for each selected application
       for (final app in selectedApplications) {
-        final log = SaveLog(
-          appName: app.name,
-          processName: app.processName,
-          timestamp: DateTime.now(),
-          success: true,
-        );
-        saveLogs.add(log);
-        print('Auto-saved process: ${app.processName}');
+        // Xử lý các process names được nhóm
+        final processNames = app.processName.split(', ');
+        for (final processName in processNames) {
+          final log = SaveLog(
+            appName: app.name,
+            processName: processName.trim(),
+            timestamp: DateTime.now(),
+            success: true,
+          );
+          saveLogs.add(log);
+          print('Auto-saved process: ${processName.trim()}');
+        }
       }
       
       notifyListeners();
@@ -283,13 +598,16 @@ class AppState extends ChangeNotifier {
       
       // Add error logs
       for (final app in selectedApplications) {
-        final log = SaveLog(
-          appName: app.name,
-          processName: app.processName,
-          timestamp: DateTime.now(),
-          success: false,
-        );
-        saveLogs.add(log);
+        final processNames = app.processName.split(', ');
+        for (final processName in processNames) {
+          final log = SaveLog(
+            appName: app.name,
+            processName: processName.trim(),
+            timestamp: DateTime.now(),
+            success: false,
+          );
+          saveLogs.add(log);
+        }
       }
       notifyListeners();
     }
