@@ -8,6 +8,7 @@ import 'package:auto_saver/models/save_log.dart';
 import 'package:auto_saver/models/app_settings.dart';
 import 'package:auto_saver/services/tray_service.dart';
 import 'package:auto_saver/services/auto_start_service.dart';
+import 'package:auto_saver/services/keyboard_service.dart';
 
 enum LogSortType { time, appName }
 
@@ -95,7 +96,7 @@ class AppState extends ChangeNotifier {
       'ccleaner.exe', 'malwarebytes.exe', 'avast.exe',
       'teamviewer.exe', 'anydesk.exe', 'ultraviewer.exe',
       // Thêm Reaper và các ứng dụng audio khác
-      'reaper.exe', 'reaper64.exe', 'reaper32.exe',
+      'reaper.exe', 'reaper64.exe', 'reaper32.exe', 'reaper_osc_action_win-amd64.exe',
       'audacity.exe', 'flstudio.exe', 'ableton.exe', 'protools.exe',
       'cubase.exe', 'logic.exe', 'garageband.exe',
       'cakewalk.exe', 'sonar.exe', 'studioone.exe',
@@ -231,6 +232,7 @@ class AppState extends ChangeNotifier {
       'reaper.exe': 'REAPER',
       'reaper64.exe': 'REAPER (64-bit)',
       'reaper32.exe': 'REAPER (32-bit)',
+      'reaper_osc_action_win-amd64.exe': 'REAPER',
       'audacity.exe': 'Audacity',
       'flstudio.exe': 'FL Studio',
       'ableton.exe': 'Ableton Live',
@@ -650,23 +652,38 @@ class AppState extends ChangeNotifier {
     bool hasError = false;
 
     try {
-      // Simulate Ctrl+S using Flutter's services
-      await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-      
-      // Add logs for each selected application
+      // Gửi Ctrl+S đến tất cả ứng dụng đã chọn
       for (final app in selectedApplications) {
         // Xử lý các process names được nhóm
         final processNames = app.processName.split(', ');
+        bool appSaved = false;
+        
+        // Thử gửi Ctrl+S cho mỗi process của ứng dụng
         for (final processName in processNames) {
+          final trimmedProcessName = processName.trim();
+          
+          // Gửi Ctrl+S đến ứng dụng
+          final success = await KeyboardService.sendCtrlSToApp(trimmedProcessName);
+          
           final log = SaveLog(
             appName: app.name,
-            processName: processName.trim(),
+            processName: trimmedProcessName,
             timestamp: DateTime.now(),
-            success: true,
+            success: success,
           );
           saveLogs.add(log);
+          
+          if (success) {
+            appSaved = true;
+            print('Auto-saved process: $trimmedProcessName');
+            break; // Chỉ cần save thành công một process là đủ
+          } else {
+            print('Failed to save process: $trimmedProcessName');
+          }
+        }
+        
+        if (appSaved) {
           savedApps.add(app.name);
-          print('Auto-saved process: ${processName.trim()}');
         }
       }
       
@@ -676,15 +693,9 @@ class AppState extends ChangeNotifier {
       if (showNotifications) {
         await TrayService.showAutoSaveNotification(
           savedApps: savedApps,
-          success: true,
+          success: savedApps.isNotEmpty,
         );
       }
-      
-      // In a real implementation, you would:
-      // 1. Find the target window
-      // 2. Focus it
-      // 3. Send Ctrl+S
-      // 4. Restore previous focus
       
     } catch (e) {
       print('Error during auto-save: $e');
