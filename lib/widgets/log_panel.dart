@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tremo_save/models/app_state.dart';
-import 'package:tremo_save/models/save_log.dart';
 
 class LogPanel extends StatelessWidget {
   const LogPanel({super.key});
@@ -15,8 +14,8 @@ class LogPanel extends StatelessWidget {
     }
     
     return Container(
-      margin: const EdgeInsets.only(top: 16),
-      height: 250,
+      margin: const EdgeInsets.only(top: 12),
+      height: 180,
       decoration: BoxDecoration(
         color: state.isDarkMode ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -34,8 +33,8 @@ class LogPanel extends StatelessWidget {
       child: Column(
         children: [
           // Header
-          Container(
-            padding: const EdgeInsets.all(16),
+                     Container(
+             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: state.isDarkMode ? Colors.grey[800] : Colors.grey[50],
               borderRadius: const BorderRadius.only(

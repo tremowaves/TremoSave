@@ -65,93 +65,79 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           secondary: const Color(0xFF06B6D4),
         ),
       ),
-      child: Scaffold(
-        backgroundColor: state.isDarkMode ? const Color(0xFF0F172A) : const Color(0xFFFAFAFA),
-        body: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            _buildSliverAppBar(context, state, isSmallScreen),
-            SliverPadding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isSmallScreen ? 16 : 24,
-                vertical: 8,
-              ),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: ScaleTransition(
-                      scale: _scaleAnimation,
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 16),
-                          _buildWelcomeCard(state, isSmallScreen),
-                          const SizedBox(height: 24),
-                          _buildQuickStats(state, isSmallScreen),
-                          const SizedBox(height: 24),
-                          _buildAppSelectorCard(state, isSmallScreen),
-                          const SizedBox(height: 24),
-                          _buildSettingsCard(state, isSmallScreen),
-                          const SizedBox(height: 24),
-                          const LogPanel(),
-                          const SizedBox(height: 24),
-                          _buildActionButton(state, isSmallScreen),
-                          if (state.selectedApplications.isEmpty)
-                            _buildInfoBanner(state, isSmallScreen),
-                          const SizedBox(height: 32),
-                        ],
-                      ),
-                    ),
-                  ),
-                ]),
-              ),
+             child: Scaffold(
+         backgroundColor: state.isDarkMode ? const Color(0xFF0F172A) : const Color(0xFFFAFAFA),
+         appBar: _buildAppBar(context, state, isSmallScreen),
+                   body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(
+              horizontal: isSmallScreen ? 8 : 16,
+              vertical: 12,
+            ),
+           child: FadeTransition(
+             opacity: _fadeAnimation,
+             child: ScaleTransition(
+               scale: _scaleAnimation,
+               child: Column(
+                                   children: [
+                    _buildWelcomeCard(state, isSmallScreen),
+                    const SizedBox(height: 12),
+                    _buildQuickStats(state, isSmallScreen),
+                    const SizedBox(height: 12),
+                    _buildAppSelectorCard(state, isSmallScreen),
+                    const SizedBox(height: 12),
+                    _buildSettingsCard(state, isSmallScreen),
+                    const SizedBox(height: 12),
+                    const LogPanel(),
+                    const SizedBox(height: 12),
+                    _buildActionButton(state, isSmallScreen),
+                    if (state.selectedApplications.isEmpty)
+                      _buildInfoBanner(state, isSmallScreen),
+                    const SizedBox(height: 12),
+                  ],
+               ),
+             ),
+           ),
+         ),
+       ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context, AppState state, bool isSmallScreen) {
+    return AppBar(
+      elevation: 4,
+      backgroundColor: state.isDarkMode ? const Color(0xFF0F172A) : const Color(0xFF1E293B),
+      foregroundColor: Colors.white,
+      title: Text(
+        'Tremo Save',
+        style: TextStyle(
+          fontWeight: FontWeight.w800,
+          fontSize: isSmallScreen ? 20 : 24,
+          letterSpacing: -0.5,
+          color: Colors.white,
+          shadows: [
+            Shadow(
+              offset: const Offset(0, 1),
+              blurRadius: 2,
+              color: Colors.black.withOpacity(0.3),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildSliverAppBar(BuildContext context, AppState state, bool isSmallScreen) {
-    return SliverAppBar(
-      expandedHeight: 120,
-      floating: false,
-      pinned: true,
-      elevation: 4,
-      backgroundColor: state.isDarkMode ? const Color(0xFF0F172A) : const Color(0xFF1E293B),
-      foregroundColor: Colors.white,
-      flexibleSpace: FlexibleSpaceBar(
-        title: Text(
-          'Tremo Save',
-          style: TextStyle(
-            fontWeight: FontWeight.w800,
-            fontSize: isSmallScreen ? 20 : 24,
-            letterSpacing: -0.5,
-            color: Colors.white,
-            shadows: [
-              Shadow(
-                offset: const Offset(0, 1),
-                blurRadius: 2,
-                color: Colors.black.withOpacity(0.3),
-              ),
-            ],
-          ),
-        ),
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: state.isDarkMode
-                  ? [
-                      const Color(0xFF0F172A),
-                      const Color(0xFF1E293B),
-                    ]
-                  : [
-                      const Color(0xFF1E293B),
-                      const Color(0xFF334155),
-                    ],
-            ),
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: state.isDarkMode
+                ? [
+                    const Color(0xFF0F172A),
+                    const Color(0xFF1E293B),
+                  ]
+                : [
+                    const Color(0xFF1E293B),
+                    const Color(0xFF334155),
+                  ],
           ),
         ),
       ),
@@ -254,7 +240,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _buildWelcomeCard(AppState state, bool isSmallScreen) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -358,7 +344,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             state: state,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Expanded(
           child: _buildStatCard(
             icon: Icons.timer_rounded,
@@ -368,7 +354,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             state: state,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Expanded(
           child: _buildStatCard(
             icon: state.isRunning ? Icons.play_circle_rounded : Icons.pause_circle_rounded,
@@ -390,7 +376,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     required AppState state,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: state.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -438,7 +424,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildAppSelectorCard(AppState state, bool isSmallScreen) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
       decoration: BoxDecoration(
         color: state.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -493,7 +479,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildSettingsCard(AppState state, bool isSmallScreen) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
       decoration: BoxDecoration(
         color: state.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -619,7 +605,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _buildActionButton(AppState state, bool isSmallScreen) {
     return Container(
       width: double.infinity,
-      height: 56,
+      height: 48,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: state.isRunning
