@@ -2,8 +2,10 @@ import 'package:tremo_save/models/app_state.dart';
 import 'package:tremo_save/widgets/app_selector.dart';
 import 'package:tremo_save/widgets/log_panel.dart';
 import 'package:tremo_save/screens/settings_page.dart';
+import 'package:tremo_save/widgets/language_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tremo_save/l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -51,6 +53,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
+    final l10n = AppLocalizations.of(context)!;
     final screenSize = MediaQuery.of(context).size;
     final isSmallScreen = screenSize.width < 600;
 
@@ -104,26 +107,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context, AppState state, bool isSmallScreen) {
+    final l10n = AppLocalizations.of(context)!;
     return AppBar(
       elevation: 4,
       backgroundColor: state.isDarkMode ? const Color(0xFF0F172A) : const Color(0xFF1E293B),
       foregroundColor: Colors.white,
-      title: Text(
-        'Tremo Save',
-        style: TextStyle(
-          fontWeight: FontWeight.w800,
-          fontSize: isSmallScreen ? 20 : 24,
-          letterSpacing: -0.5,
-          color: Colors.white,
-          shadows: [
-            Shadow(
-              offset: const Offset(0, 1),
-              blurRadius: 2,
-              color: Colors.black.withOpacity(0.3),
-            ),
-          ],
-        ),
-      ),
+             title: Text(
+         l10n.appTitle,
+         style: TextStyle(
+           fontWeight: FontWeight.w800,
+           fontSize: isSmallScreen ? 20 : 24,
+           letterSpacing: -0.5,
+           color: Colors.white,
+           shadows: [
+             Shadow(
+               offset: const Offset(0, 1),
+               blurRadius: 2,
+               color: Colors.black.withOpacity(0.3),
+             ),
+           ],
+         ),
+       ),
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -146,21 +150,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           icon: state.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
           color: state.isDarkMode ? const Color(0xFFFDBA74) : Colors.white70,
           onPressed: state.toggleDarkMode,
-          tooltip: state.isDarkMode ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối',
+          tooltip: state.isDarkMode ? l10n.toggleDarkMode : l10n.toggleLightMode,
           isSmallScreen: isSmallScreen,
         ),
         _buildAppBarButton(
           icon: Icons.history_rounded,
           color: state.showLogs ? const Color(0xFF06B6D4) : Colors.white70,
           onPressed: state.toggleLogs,
-          tooltip: 'Hiển thị lịch sử lưu',
+          tooltip: l10n.showSaveHistory,
           isSmallScreen: isSmallScreen,
         ),
         _buildAppBarButton(
           icon: Icons.refresh_rounded,
           color: Colors.white70,
           onPressed: state.refreshApplications,
-          tooltip: 'Làm mới danh sách ứng dụng',
+          tooltip: l10n.refreshApps,
           isSmallScreen: isSmallScreen,
         ),
         _buildAppBarButton(
@@ -170,7 +174,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             context,
             MaterialPageRoute(builder: (context) => const SettingsPage()),
           ),
-          tooltip: 'Cài đặt',
+          tooltip: l10n.settings,
           isSmallScreen: isSmallScreen,
         ),
         _buildAppBarButton(
@@ -178,15 +182,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           color: Colors.orange[300]!,
           onPressed: () async {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Starting 5-second test. Switch to target application now!'),
+              SnackBar(
+                content: Text(l10n.startingTest),
                 duration: Duration(seconds: 3),
                 backgroundColor: Colors.orange,
               ),
             );
             await state.testSaveAfter5Seconds();
           },
-          tooltip: 'Test Save After 5s',
+          tooltip: l10n.testSaveAfter5s,
           isSmallScreen: isSmallScreen,
         ),
         _buildAppBarButton(
@@ -194,17 +198,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           color: Colors.blue[300]!,
           onPressed: () async {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Testing notification system...'),
+              SnackBar(
+                content: Text(l10n.testingNotifications),
                 duration: Duration(seconds: 2),
                 backgroundColor: Colors.blue,
               ),
             );
             await state.testNotificationSystem();
           },
-          tooltip: 'Test Notifications',
+          tooltip: l10n.testNotifications,
           isSmallScreen: isSmallScreen,
         ),
+        const LanguageSelector(),
         const SizedBox(width: 8),
       ],
     );
@@ -238,6 +243,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildWelcomeCard(AppState state, bool isSmallScreen) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
@@ -292,7 +298,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Tự động lưu thông minh',
+                      l10n.welcomeTitle,
                       style: TextStyle(
                         fontSize: isSmallScreen ? 18 : 20,
                         fontWeight: FontWeight.w700,
@@ -302,7 +308,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Quản lý và bảo vệ công việc của bạn',
+                      l10n.welcomeSubtitle,
                       style: TextStyle(
                         fontSize: 14,
                         color: state.isDarkMode 
@@ -318,7 +324,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 16),
           Text(
-            'Chọn các ứng dụng bạn muốn tự động lưu. Hệ thống sẽ theo dõi và lưu công việc khi bạn đang sử dụng các ứng dụng đã chọn.',
+            l10n.welcomeDescription,
             style: TextStyle(
               fontSize: 14,
               color: state.isDarkMode 
@@ -333,12 +339,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildQuickStats(AppState state, bool isSmallScreen) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Expanded(
           child: _buildStatCard(
             icon: Icons.apps_rounded,
-            label: 'Ứng dụng',
+            label: l10n.applications,
             value: '${state.selectedApplications.length}',
             color: const Color(0xFF06B6D4),
             state: state,
@@ -348,7 +355,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         Expanded(
           child: _buildStatCard(
             icon: Icons.timer_rounded,
-            label: 'Khoảng thời gian',
+            label: l10n.interval,
             value: '${state.interval}m',
             color: const Color(0xFF10B981),
             state: state,
@@ -358,8 +365,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         Expanded(
           child: _buildStatCard(
             icon: state.isRunning ? Icons.play_circle_rounded : Icons.pause_circle_rounded,
-            label: 'Trạng thái',
-            value: state.isRunning ? 'Hoạt động' : 'Tạm dừng',
+            label: l10n.status,
+            value: state.isRunning ? l10n.active : l10n.paused,
             color: state.isRunning ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
             state: state,
           ),
@@ -423,6 +430,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildAppSelectorCard(AppState state, bool isSmallScreen) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
       decoration: BoxDecoration(
@@ -460,7 +468,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
               const SizedBox(width: 12),
               Text(
-                'Chọn ứng dụng',
+                                  l10n.selectApps,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -478,6 +486,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildSettingsCard(AppState state, bool isSmallScreen) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
       decoration: BoxDecoration(
@@ -515,7 +524,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
               const SizedBox(width: 12),
               Text(
-                'Cài đặt tự động lưu',
+                                  l10n.autoSaveSettings,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -538,7 +547,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Khoảng thời gian lưu tự động:',
+                  l10n.saveInterval,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -593,7 +602,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               max: 60,
               divisions: 59,
               value: state.interval.toDouble(),
-              label: '${state.interval} phút',
+                                  label: l10n.minutes(state.interval),
               onChanged: state.setInterval,
             ),
           ),
@@ -603,6 +612,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildActionButton(AppState state, bool isSmallScreen) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       height: 48,
@@ -650,7 +660,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  state.isRunning ? 'Dừng tự động lưu' : 'Bắt đầu tự động lưu',
+                  state.isRunning ? l10n.stopAutoSave : l10n.startAutoSave,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -667,6 +677,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildInfoBanner(AppState state, bool isSmallScreen) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(16),
@@ -685,7 +696,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Vui lòng chọn ít nhất một ứng dụng để bắt đầu tự động lưu',
+              l10n.selectAtLeastOneApp,
               style: TextStyle(
                 fontSize: 14,
                 color: const Color(0xFF92400E),

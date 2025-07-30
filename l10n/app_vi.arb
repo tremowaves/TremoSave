@@ -1,0 +1,194 @@
+{
+  "@@locale": "vi",
+  "appTitle": "Tremo Save",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "welcomeTitle": "Tự động lưu thông minh",
+  "@welcomeTitle": {
+    "description": "Welcome card title"
+  },
+  
+  "welcomeSubtitle": "Quản lý và bảo vệ công việc của bạn",
+  "@welcomeSubtitle": {
+    "description": "Welcome card subtitle"
+  },
+  
+  "welcomeDescription": "Chọn các ứng dụng bạn muốn tự động lưu. Hệ thống sẽ theo dõi và lưu công việc khi bạn đang sử dụng các ứng dụng đã chọn.",
+  "@welcomeDescription": {
+    "description": "Welcome card description"
+  },
+  
+  "selectApps": "Chọn ứng dụng",
+  "@selectApps": {
+    "description": "App selector card title"
+  },
+  
+  "autoSaveSettings": "Cài đặt tự động lưu",
+  "@autoSaveSettings": {
+    "description": "Settings card title"
+  },
+  
+  "saveInterval": "Khoảng thời gian lưu tự động:",
+  "@saveInterval": {
+    "description": "Save interval label"
+  },
+  
+  "minutes": "{count} phút",
+  "@minutes": {
+    "description": "Minutes with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  
+  "startAutoSave": "Bắt đầu tự động lưu",
+  "@startAutoSave": {
+    "description": "Start auto save button"
+  },
+  
+  "stopAutoSave": "Dừng tự động lưu",
+  "@stopAutoSave": {
+    "description": "Stop auto save button"
+  },
+  
+  "applications": "Ứng dụng",
+  "@applications": {
+    "description": "Applications stat label"
+  },
+  
+  "interval": "Khoảng thời gian",
+  "@interval": {
+    "description": "Interval stat label"
+  },
+  
+  "status": "Trạng thái",
+  "@status": {
+    "description": "Status stat label"
+  },
+  
+  "active": "Hoạt động",
+  "@active": {
+    "description": "Active status"
+  },
+  
+  "paused": "Tạm dừng",
+  "@paused": {
+    "description": "Paused status"
+  },
+  
+  "saveHistory": "Lịch sử lưu tự động",
+  "@saveHistory": {
+    "description": "Log panel title"
+  },
+  
+  "latestTime": "Thời gian gần nhất",
+  "@latestTime": {
+    "description": "Sort by time option"
+  },
+  
+  "appName": "Tên ứng dụng",
+  "@appName": {
+    "description": "Sort by app name option"
+  },
+  
+  "clearAllLogs": "Xóa tất cả log",
+  "@clearAllLogs": {
+    "description": "Clear logs button tooltip"
+  },
+  
+  "noSaveHistory": "Chưa có lịch sử lưu",
+  "@noSaveHistory": {
+    "description": "Empty log message"
+  },
+  
+  "success": "Thành công",
+  "@success": {
+    "description": "Success status"
+  },
+  
+  "error": "Lỗi",
+  "@error": {
+    "description": "Error status"
+  },
+  
+  "totalSaves": "Tổng cộng {count} lần lưu",
+  "@totalSaves": {
+    "description": "Total saves count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  
+  "successCount": "{success} thành công, {error} lỗi",
+  "@successCount": {
+    "description": "Success and error count",
+    "placeholders": {
+      "success": {
+        "type": "int",
+        "example": "8"
+      },
+      "error": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  
+  "selectAtLeastOneApp": "Vui lòng chọn ít nhất một ứng dụng để bắt đầu tự động lưu",
+  "@selectAtLeastOneApp": {
+    "description": "Info banner message"
+  },
+  
+  "toggleDarkMode": "Chuyển sang chế độ sáng",
+  "@toggleDarkMode": {
+    "description": "Dark mode toggle tooltip"
+  },
+  
+  "toggleLightMode": "Chuyển sang chế độ tối",
+  "@toggleLightMode": {
+    "description": "Light mode toggle tooltip"
+  },
+  
+  "showSaveHistory": "Hiển thị lịch sử lưu",
+  "@showSaveHistory": {
+    "description": "Show logs tooltip"
+  },
+  
+  "refreshApps": "Làm mới danh sách ứng dụng",
+  "@refreshApps": {
+    "description": "Refresh apps tooltip"
+  },
+  
+  "settings": "Cài đặt",
+  "@settings": {
+    "description": "Settings tooltip"
+  },
+  
+  "testSaveAfter5s": "Test Save After 5s",
+  "@testSaveAfter5s": {
+    "description": "Test save tooltip"
+  },
+  
+  "testNotifications": "Test Notifications",
+  "@testNotifications": {
+    "description": "Test notifications tooltip"
+  },
+  
+  "startingTest": "Starting 5-second test. Switch to target application now!",
+  "@startingTest": {
+    "description": "Test start message"
+  },
+  
+  "testingNotifications": "Testing notification system...",
+  "@testingNotifications": {
+    "description": "Notification test message"
+  }
+} 

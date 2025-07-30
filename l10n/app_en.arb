@@ -1,0 +1,194 @@
+{
+  "@@locale": "en",
+  "appTitle": "Tremo Save",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "welcomeTitle": "Smart Auto Save",
+  "@welcomeTitle": {
+    "description": "Welcome card title"
+  },
+  
+  "welcomeSubtitle": "Manage and protect your work",
+  "@welcomeSubtitle": {
+    "description": "Welcome card subtitle"
+  },
+  
+  "welcomeDescription": "Select the applications you want to auto-save. The system will monitor and save your work when you are using the selected applications.",
+  "@welcomeDescription": {
+    "description": "Welcome card description"
+  },
+  
+  "selectApps": "Select Applications",
+  "@selectApps": {
+    "description": "App selector card title"
+  },
+  
+  "autoSaveSettings": "Auto Save Settings",
+  "@autoSaveSettings": {
+    "description": "Settings card title"
+  },
+  
+  "saveInterval": "Auto save interval:",
+  "@saveInterval": {
+    "description": "Save interval label"
+  },
+  
+  "minutes": "{count} minutes",
+  "@minutes": {
+    "description": "Minutes with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  
+  "startAutoSave": "Start Auto Save",
+  "@startAutoSave": {
+    "description": "Start auto save button"
+  },
+  
+  "stopAutoSave": "Stop Auto Save",
+  "@stopAutoSave": {
+    "description": "Stop auto save button"
+  },
+  
+  "applications": "Applications",
+  "@applications": {
+    "description": "Applications stat label"
+  },
+  
+  "interval": "Interval",
+  "@interval": {
+    "description": "Interval stat label"
+  },
+  
+  "status": "Status",
+  "@status": {
+    "description": "Status stat label"
+  },
+  
+  "active": "Active",
+  "@active": {
+    "description": "Active status"
+  },
+  
+  "paused": "Paused",
+  "@paused": {
+    "description": "Paused status"
+  },
+  
+  "saveHistory": "Save History",
+  "@saveHistory": {
+    "description": "Log panel title"
+  },
+  
+  "latestTime": "Latest Time",
+  "@latestTime": {
+    "description": "Sort by time option"
+  },
+  
+  "appName": "App Name",
+  "@appName": {
+    "description": "Sort by app name option"
+  },
+  
+  "clearAllLogs": "Clear all logs",
+  "@clearAllLogs": {
+    "description": "Clear logs button tooltip"
+  },
+  
+  "noSaveHistory": "No save history yet",
+  "@noSaveHistory": {
+    "description": "Empty log message"
+  },
+  
+  "success": "Success",
+  "@success": {
+    "description": "Success status"
+  },
+  
+  "error": "Error",
+  "@error": {
+    "description": "Error status"
+  },
+  
+  "totalSaves": "Total {count} saves",
+  "@totalSaves": {
+    "description": "Total saves count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  
+  "successCount": "{success} successful, {error} errors",
+  "@successCount": {
+    "description": "Success and error count",
+    "placeholders": {
+      "success": {
+        "type": "int",
+        "example": "8"
+      },
+      "error": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  
+  "selectAtLeastOneApp": "Please select at least one application to start auto save",
+  "@selectAtLeastOneApp": {
+    "description": "Info banner message"
+  },
+  
+  "toggleDarkMode": "Switch to light mode",
+  "@toggleDarkMode": {
+    "description": "Dark mode toggle tooltip"
+  },
+  
+  "toggleLightMode": "Switch to dark mode",
+  "@toggleLightMode": {
+    "description": "Light mode toggle tooltip"
+  },
+  
+  "showSaveHistory": "Show save history",
+  "@showSaveHistory": {
+    "description": "Show logs tooltip"
+  },
+  
+  "refreshApps": "Refresh application list",
+  "@refreshApps": {
+    "description": "Refresh apps tooltip"
+  },
+  
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings tooltip"
+  },
+  
+  "testSaveAfter5s": "Test Save After 5s",
+  "@testSaveAfter5s": {
+    "description": "Test save tooltip"
+  },
+  
+  "testNotifications": "Test Notifications",
+  "@testNotifications": {
+    "description": "Test notifications tooltip"
+  },
+  
+  "startingTest": "Starting 5-second test. Switch to target application now!",
+  "@startingTest": {
+    "description": "Test start message"
+  },
+  
+  "testingNotifications": "Testing notification system...",
+  "@testingNotifications": {
+    "description": "Notification test message"
+  }
+} 
