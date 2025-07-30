@@ -117,16 +117,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       expandedHeight: 120,
       floating: false,
       pinned: true,
-      elevation: 0,
-      backgroundColor: state.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
-      foregroundColor: state.isDarkMode ? Colors.white : const Color(0xFF1E293B),
+      elevation: 4,
+      backgroundColor: state.isDarkMode ? const Color(0xFF0F172A) : const Color(0xFF1E293B),
+      foregroundColor: Colors.white,
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
           'Tremo Save',
           style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: isSmallScreen ? 18 : 22,
+            fontWeight: FontWeight.w800,
+            fontSize: isSmallScreen ? 20 : 24,
             letterSpacing: -0.5,
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                offset: const Offset(0, 1),
+                blurRadius: 2,
+                color: Colors.black.withOpacity(0.3),
+              ),
+            ],
           ),
         ),
         background: Container(
@@ -136,12 +144,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               end: Alignment.bottomRight,
               colors: state.isDarkMode
                   ? [
+                      const Color(0xFF0F172A),
                       const Color(0xFF1E293B),
-                      const Color(0xFF334155),
                     ]
                   : [
-                      Colors.white,
-                      const Color(0xFFF8FAFC),
+                      const Color(0xFF1E293B),
+                      const Color(0xFF334155),
                     ],
             ),
           ),
@@ -150,33 +158,65 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       actions: [
         _buildAppBarButton(
           icon: state.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-          color: state.isDarkMode ? const Color(0xFFFDBA74) : const Color(0xFF64748B),
+          color: state.isDarkMode ? const Color(0xFFFDBA74) : Colors.white70,
           onPressed: state.toggleDarkMode,
           tooltip: state.isDarkMode ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối',
           isSmallScreen: isSmallScreen,
         ),
         _buildAppBarButton(
           icon: Icons.history_rounded,
-          color: state.showLogs ? const Color(0xFF06B6D4) : const Color(0xFF64748B),
+          color: state.showLogs ? const Color(0xFF06B6D4) : Colors.white70,
           onPressed: state.toggleLogs,
           tooltip: 'Hiển thị lịch sử lưu',
           isSmallScreen: isSmallScreen,
         ),
         _buildAppBarButton(
           icon: Icons.refresh_rounded,
-          color: const Color(0xFF64748B),
+          color: Colors.white70,
           onPressed: state.refreshApplications,
           tooltip: 'Làm mới danh sách ứng dụng',
           isSmallScreen: isSmallScreen,
         ),
         _buildAppBarButton(
           icon: Icons.settings_rounded,
-          color: const Color(0xFF64748B),
+          color: Colors.white70,
           onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const SettingsPage()),
           ),
           tooltip: 'Cài đặt',
+          isSmallScreen: isSmallScreen,
+        ),
+        _buildAppBarButton(
+          icon: Icons.timer,
+          color: Colors.orange[300]!,
+          onPressed: () async {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Starting 5-second test. Switch to target application now!'),
+                duration: Duration(seconds: 3),
+                backgroundColor: Colors.orange,
+              ),
+            );
+            await state.testSaveAfter5Seconds();
+          },
+          tooltip: 'Test Save After 5s',
+          isSmallScreen: isSmallScreen,
+        ),
+        _buildAppBarButton(
+          icon: Icons.notifications,
+          color: Colors.blue[300]!,
+          onPressed: () async {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Testing notification system...'),
+                duration: Duration(seconds: 2),
+                backgroundColor: Colors.blue,
+              ),
+            );
+            await state.testNotificationSystem();
+          },
+          tooltip: 'Test Notifications',
           isSmallScreen: isSmallScreen,
         ),
         const SizedBox(width: 8),
