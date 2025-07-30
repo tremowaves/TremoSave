@@ -29,14 +29,6 @@ DisableWelcomePage=no
 WizardResizable=yes
 WizardImageFile=
 WizardSmallImageFile=
-SetupWindowVisible=yes
-WindowVisible=yes
-WindowShowCaption=yes
-WindowResizable=yes
-WindowStartMaximized=no
-BackColor=clWhite
-BackColor2=clWhite
-BackColorDirection=toptobottom
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -47,22 +39,22 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Name: "startupicon"; Description: "Start Tremo Save when Windows starts"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "build\windows\x64\runner\Release\auto_saver.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "build\windows\x64\runner\Release\TremoSave.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\Tremo Save"; Filename: "{app}\auto_saver.exe"; WorkingDir: "{app}"
+Name: "{group}\Tremo Save"; Filename: "{app}\TremoSave.exe"; WorkingDir: "{app}"
 Name: "{group}\{cm:UninstallProgram,Tremo Save}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\Tremo Save"; Filename: "{app}\auto_saver.exe"; WorkingDir: "{app}"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Tremo Save"; Filename: "{app}\auto_saver.exe"; WorkingDir: "{app}"; Tasks: quicklaunchicon
-Name: "{commonstartup}\Tremo Save"; Filename: "{app}\auto_saver.exe"; WorkingDir: "{app}"; Tasks: startupicon
+Name: "{autodesktop}\Tremo Save"; Filename: "{app}\TremoSave.exe"; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Tremo Save"; Filename: "{app}\TremoSave.exe"; WorkingDir: "{app}"; Tasks: quicklaunchicon
+Name: "{commonstartup}\Tremo Save"; Filename: "{app}\TremoSave.exe"; WorkingDir: "{app}"; Tasks: startupicon
 
 [Registry]
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "Tremo Save"; ValueData: """{app}\auto_saver.exe"""; Tasks: startupicon; Flags: uninsdeletevalue
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "Tremo Save"; ValueData: """{app}\TremoSave.exe"""; Tasks: startupicon; Flags: uninsdeletevalue
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "Tremo Save"; ValueData: ""; Tasks: startupicon; Flags: uninsdeletevalue; Check: not IsTaskSelected('startupicon')
 
 [Run]
-Filename: "{app}\auto_saver.exe"; Description: "{cm:LaunchProgram,Tremo Save}"; Flags: nowait postinstall skipifsilent; WorkingDir: "{app}"
+Filename: "{app}\TremoSave.exe"; Description: "{cm:LaunchProgram,Tremo Save}"; Flags: nowait postinstall skipifsilent; WorkingDir: "{app}"
 
 [UninstallDelete]
 Type: files; Name: "{app}\*.log"

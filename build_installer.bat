@@ -1,49 +1,49 @@
 @echo off
-echo ========================================
-echo    Tremo Save - Build Installer
-echo ========================================
-echo.
+echo Building TremoSave Installer...
 
-echo [1/3] Building Flutter application...
-flutter build windows --release
-if %errorlevel% neq 0 (
-    echo ERROR: Flutter build failed!
-    pause
-    exit /b 1
-)
-echo ✓ Flutter build completed successfully!
-echo.
-
-echo [2/3] Checking Inno Setup...
+REM Check if Inno Setup is installed
 where iscc >nul 2>&1
 if %errorlevel% neq 0 (
-    echo WARNING: Inno Setup Compiler (ISCC) not found in PATH
-    echo Please install Inno Setup and add it to PATH
-    echo Download from: https://jrsoftware.org/isinfo.php
-    echo.
-    echo You can still build manually using Inno Setup IDE:
-    echo 1. Open installer.iss in Inno Setup IDE
-    echo 2. Press F9 to compile
+    echo Inno Setup not found in PATH.
+    echo Please install Inno Setup from: https://jrsoftware.org/isinfo.php
+    echo After installation, make sure iscc.exe is in your PATH
     pause
     exit /b 1
 )
-echo ✓ Inno Setup Compiler found!
-echo.
 
-echo [3/3] Building installer...
+REM Build Flutter Windows app first
+echo Building Flutter Windows app...
+flutter build windows --release
+if %errorlevel% neq 0 (
+    echo Failed to build Flutter app
+    pause
+    exit /b 1
+)
+
+REM Create installer directory if it doesn't exist
+if not exist "installer" mkdir installer
+
+REM Build basic installer
+echo Building basic installer...
 iscc installer.iss
 if %errorlevel% neq 0 (
-    echo ERROR: Installer build failed!
+    echo Failed to build basic installer
     pause
     exit /b 1
 )
-echo ✓ Installer built successfully!
-echo.
 
-echo ========================================
-echo    Build completed successfully!
-echo ========================================
+REM Build advanced installer
+echo Building advanced installer...
+iscc installer_advanced.iss
+if %errorlevel% neq 0 (
+    echo Failed to build advanced installer
+    pause
+    exit /b 1
+)
+
 echo.
-echo Installer location: installer\AutoSaver_Setup.exe
+echo Installers created successfully!
+echo - Basic installer: installer\TremoSave_Setup.exe
+echo - Advanced installer: installer\TremoSave_Setup_v1.0.0.exe
 echo.
 pause 

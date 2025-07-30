@@ -28,17 +28,17 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
 [Files]
-Source: "build\windows\x64\runner\Release\auto_saver.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "build\windows\x64\runner\Release\TremoSave.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\Tremo Save"; Filename: "{app}\auto_saver.exe"
+Name: "{group}\Tremo Save"; Filename: "{app}\TremoSave.exe"
 Name: "{group}\{cm:UninstallProgram,Tremo Save}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\Tremo Save"; Filename: "{app}\auto_saver.exe"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Tremo Save"; Filename: "{app}\auto_saver.exe"; Tasks: quicklaunchicon
+Name: "{autodesktop}\Tremo Save"; Filename: "{app}\TremoSave.exe"; Tasks: desktopicon
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Tremo Save"; Filename: "{app}\TremoSave.exe"; Tasks: quicklaunchicon
 
 [Run]
-Filename: "{app}\auto_saver.exe"; Description: "{cm:LaunchProgram,Tremo Save}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\TremoSave.exe"; Description: "{cm:LaunchProgram,Tremo Save}"; Flags: nowait postinstall skipifsilent
 
 [Code]
 function InitializeSetup(): Boolean;
