@@ -11,20 +11,12 @@ class SaveLog {
     this.success = true,
   });
 
-  String get formattedTime {
-    return '${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}:${timestamp.second.toString().padLeft(2, '0')}';
-  }
+  String get formattedTime => '${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}:${timestamp.second.toString().padLeft(2, '0')}';
 
-  String get formattedDate {
-    return '${timestamp.day.toString().padLeft(2, '0')}/${timestamp.month.toString().padLeft(2, '0')}/${timestamp.year}';
-  }
+  String get formattedDate => '${timestamp.day.toString().padLeft(2, '0')}/${timestamp.month.toString().padLeft(2, '0')}/${timestamp.year}';
 
-  String get fullDateTime {
-    return '$formattedDate $formattedTime';
-  }
+  String get fullDateTime => '$formattedDate $formattedTime';
 
   @override
-  String toString() {
-    return 'SaveLog(appName: $appName, timestamp: $timestamp, success: $success)';
-  }
+  String toString() => 'SaveLog(appName: $appName, timestamp: $timestamp, success: $success)';
 } 

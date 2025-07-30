@@ -6,4 +6,15 @@ msix_version: "1.0.0.0"
 logo_path: "assets/AppIcon.ico"
 capabilities: "internetClient"
 store: true
-publisher: "CN=Tremo" 
+publisher: "CN=Tremo"
+architecture: "x64" 
+
+
+
+
+
+
+
+
+
+

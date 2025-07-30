@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:auto_saver/models/app_state.dart';
-import 'package:auto_saver/services/auto_start_service.dart';
+import 'package:tremo_save/models/app_state.dart';
+import 'package:tremo_save/services/auto_start_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -67,7 +67,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   value: state.interval.toDouble(),
                   min: 1,
                   max: 60,
-                  onChanged: (value) => state.setInterval(value),
+                  onChanged: state.setInterval,
                 ),
               ],
             ),
@@ -99,14 +99,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: 'Ẩn vào system tray',
                   subtitle: 'Ứng dụng sẽ ẩn vào khay hệ thống khi minimize',
                   value: state.minimizeToTray,
-                  onChanged: (value) => state.setMinimizeToTray(value),
+                  onChanged: state.setMinimizeToTray,
                 ),
                                      _buildSwitchTile(
                        context,
                        title: 'Hiển thị thông báo',
                        subtitle: 'Hiển thị notification khi auto save',
                        value: state.showNotifications,
-                       onChanged: (value) => state.setShowNotifications(value),
+                       onChanged: state.setShowNotifications,
                      ),
               ],
             ),

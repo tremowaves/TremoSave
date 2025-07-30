@@ -14,9 +14,7 @@ class AppInfo {
   }
 
   @override
-  String toString() {
-    return name;
-  }
+  String toString() => name;
 
   @override
   bool operator ==(Object other) {

@@ -1,7 +1,7 @@
-import 'package:auto_saver/models/app_state.dart';
-import 'package:auto_saver/widgets/app_selector.dart';
-import 'package:auto_saver/widgets/log_panel.dart';
-import 'package:auto_saver/screens/settings_page.dart';
+import 'package:tremo_save/models/app_state.dart';
+import 'package:tremo_save/widgets/app_selector.dart';
+import 'package:tremo_save/widgets/log_panel.dart';
+import 'package:tremo_save/screens/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
               color: state.isDarkMode ? Colors.yellow[300] : Colors.white,
               size: isSmallScreen ? 20 : 24,
             ),
-            onPressed: () => state.toggleDarkMode(),
+            onPressed: state.toggleDarkMode,
             tooltip: state.isDarkMode ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối',
           ),
           // Show logs toggle
@@ -44,7 +44,7 @@ class HomePage extends StatelessWidget {
               color: state.showLogs ? Colors.blue[300] : Colors.white,
               size: isSmallScreen ? 20 : 24,
             ),
-            onPressed: () => state.toggleLogs(),
+            onPressed: state.toggleLogs,
             tooltip: 'Hiển thị lịch sử lưu',
           ),
           // Refresh button
@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
               Icons.refresh,
               size: isSmallScreen ? 20 : 24,
             ),
-            onPressed: () => state.refreshApplications(),
+            onPressed: state.refreshApplications,
             tooltip: 'Làm mới danh sách ứng dụng',
           ),
           // Settings button
@@ -81,7 +81,7 @@ class HomePage extends StatelessWidget {
                    onPressed: () async {
                      // Test save sau 5 giây
                      ScaffoldMessenger.of(context).showSnackBar(
-                       SnackBar(
+                       const SnackBar(
                          content: Text('Starting 5-second test. Switch to target application now!'),
                          duration: Duration(seconds: 3),
                          backgroundColor: Colors.orange,
@@ -101,7 +101,7 @@ class HomePage extends StatelessWidget {
                    onPressed: () async {
                      // Test notification system
                      ScaffoldMessenger.of(context).showSnackBar(
-                       SnackBar(
+                       const SnackBar(
                          content: Text('Testing notification system...'),
                          duration: Duration(seconds: 2),
                          backgroundColor: Colors.blue,
@@ -134,7 +134,7 @@ class HomePage extends StatelessWidget {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -295,9 +295,7 @@ class HomePage extends StatelessWidget {
                           divisions: 59,
                           value: state.interval.toDouble(),
                           label: '${state.interval} phút',
-                          onChanged: (value) {
-                            state.setInterval(value);
-                          },
+                          onChanged: state.setInterval,
                         ),
                       ),
                       

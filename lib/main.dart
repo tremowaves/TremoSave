@@ -1,5 +1,5 @@
-import 'package:auto_saver/models/app_state.dart';
-import 'package:auto_saver/screens/home_page.dart';
+import 'package:tremo_save/models/app_state.dart';
+import 'package:tremo_save/screens/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:provider/provider.dart';
@@ -25,8 +25,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context) => MaterialApp(
       title: 'Tremo Save',
       theme: ThemeData(
         primaryColor: Colors.grey[900],
@@ -34,5 +33,4 @@ class MyApp extends StatelessWidget {
       ),
       home: const HomePage(),
     );
-  }
 }

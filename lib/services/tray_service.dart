@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:win32/win32.dart';
-import 'package:auto_saver/models/app_settings.dart';
+import 'package:tremo_save/models/app_settings.dart';
 import 'package:local_notifier/local_notifier.dart';
 
 class TrayService {

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:win32/win32.dart';
 
 class KeyboardService {
   /// Kiểm tra xem active window có thuộc danh sách ứng dụng được chọn không

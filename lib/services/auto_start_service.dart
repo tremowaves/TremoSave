@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:auto_saver/models/app_settings.dart';
+import 'package:tremo_save/models/app_settings.dart';
 
 class AutoStartService {
   static const String _registryKey = 'Software\\Microsoft\\Windows\\CurrentVersion\\Run';

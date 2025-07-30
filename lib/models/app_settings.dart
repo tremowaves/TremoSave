@@ -90,13 +90,11 @@ class AppSettings {
   }
 
   // Load tất cả settings
-  static Future<Map<String, dynamic>> loadAllSettings() async {
-    return {
+  static Future<Map<String, dynamic>> loadAllSettings() async => {
       'selectedApps': await getSelectedApps(),
       'interval': await getInterval(),
       'autoRun': await getAutoRun(),
       'minimizeToTray': await getMinimizeToTray(),
       'showNotifications': await getShowNotifications(),
     };
-  }
 } 

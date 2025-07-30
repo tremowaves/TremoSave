@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:auto_saver/models/app_state.dart';
-import 'package:auto_saver/models/save_log.dart';
+import 'package:tremo_save/models/app_state.dart';
+import 'package:tremo_save/models/save_log.dart';
 
 class LogPanel extends StatelessWidget {
   const LogPanel({super.key});
@@ -107,7 +107,7 @@ class LogPanel extends StatelessWidget {
                 
                 // Clear logs button
                 IconButton(
-                  onPressed: state.saveLogs.isEmpty ? null : () => state.clearLogs(),
+                  onPressed: state.saveLogs.isEmpty ? null : state.clearLogs,
                   icon: Icon(
                     Icons.clear_all,
                     size: 20,

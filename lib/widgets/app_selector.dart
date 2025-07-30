@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:auto_saver/models/app_state.dart';
+import 'package:tremo_save/models/app_state.dart';
 
 class AppSelector extends StatefulWidget {
   const AppSelector({super.key});
@@ -133,7 +133,7 @@ class _AppSelectorState extends State<AppSelector> {
                   children: [
                     Flexible(
                       child: TextButton(
-                        onPressed: () => state.selectAllApplications(),
+                        onPressed: state.selectAllApplications,
                         child: Text(
                           'Chọn tất cả',
                           style: TextStyle(
@@ -145,7 +145,7 @@ class _AppSelectorState extends State<AppSelector> {
                     ),
                     Flexible(
                       child: TextButton(
-                        onPressed: () => state.deselectAllApplications(),
+                        onPressed: state.deselectAllApplications,
                         child: Text(
                           'Bỏ chọn tất cả',
                           style: TextStyle(

@@ -4,12 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:ps_list/ps_list.dart';
-import 'package:auto_saver/models/app_info.dart';
-import 'package:auto_saver/models/save_log.dart';
-import 'package:auto_saver/models/app_settings.dart';
-import 'package:auto_saver/services/tray_service.dart';
-import 'package:auto_saver/services/auto_start_service.dart';
-import 'package:auto_saver/services/keyboard_service.dart';
+import 'package:tremo_save/models/app_info.dart';
+import 'package:tremo_save/models/save_log.dart';
+import 'package:tremo_save/models/app_settings.dart';
+import 'package:tremo_save/services/tray_service.dart';
+import 'package:tremo_save/services/auto_start_service.dart';
+import 'package:tremo_save/services/keyboard_service.dart';
 
 enum LogSortType { time, appName }
 
@@ -61,14 +61,12 @@ class AppState extends ChangeNotifier {
         }
         
         final displayName = _getDisplayName(process);
-        if (displayName != null) {
-          if (groupedApps.containsKey(displayName)) {
-            groupedApps[displayName]!.add(process);
-          } else {
-            groupedApps[displayName] = [process];
-          }
+        if (groupedApps.containsKey(displayName)) {
+          groupedApps[displayName]!.add(process);
+        } else {
+          groupedApps[displayName] = [process];
         }
-      }
+            }
       
       print('Grouped into ${groupedApps.length} applications:');
       for (final entry in groupedApps.entries) {
@@ -611,7 +609,7 @@ class AppState extends ChangeNotifier {
 
   // Removed: setOnlyActiveWindow method - no longer needed
 
-  void setAutoRun(bool value) async {
+  Future<void> setAutoRun(bool value) async {
     autoRun = value;
     saveSettings();
     
@@ -772,7 +770,7 @@ class AppState extends ChangeNotifier {
     
     // Đếm ngược
     for (int i = 5; i > 0; i--) {
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       print('⏰ Countdown: $i seconds remaining...');
     }
     
@@ -826,11 +824,11 @@ class AppState extends ChangeNotifier {
     
     // Bước 3: Đếm ngược 3 giây
     print('⏰ Countdown: 3 seconds...');
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     print('⏰ Countdown: 2 seconds...');
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     print('⏰ Countdown: 1 second...');
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     
     // Bước 4: Thực hiện save
     print('🚀 Executing save function...');
@@ -855,7 +853,7 @@ class AppState extends ChangeNotifier {
       body: 'Đây là test notification Windows native',
     );
     
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     
     // Test 2: MessageBox notification
     await TrayService.showNotification(

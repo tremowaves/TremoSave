@@ -8,7 +8,7 @@ class SimpleNotificationService {
   }) async {
     try {
       // Sử dụng PowerShell để hiển thị toast notification
-      final script = r'''
+      const script = r'''
         Add-Type -AssemblyName System.Windows.Forms
         Add-Type -AssemblyName System.Drawing
         
