@@ -5,389 +5,669 @@ import 'package:tremo_save/screens/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
-    @override
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late AnimationController _scaleController;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.elasticOut),
+    );
+    
+    _fadeController.forward();
+    _scaleController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
     final screenSize = MediaQuery.of(context).size;
     final isSmallScreen = screenSize.width < 600;
 
-    return Scaffold(
-      appBar: AppBar(
+    return Theme(
+      data: Theme.of(context).copyWith(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6366F1),
+          brightness: state.isDarkMode ? Brightness.dark : Brightness.light,
+        ).copyWith(
+          surface: state.isDarkMode ? const Color(0xFF0F172A) : const Color(0xFFFAFAFA),
+          primary: const Color(0xFF6366F1),
+          secondary: const Color(0xFF06B6D4),
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: state.isDarkMode ? const Color(0xFF0F172A) : const Color(0xFFFAFAFA),
+        body: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            _buildSliverAppBar(context, state, isSmallScreen),
+            SliverPadding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isSmallScreen ? 16 : 24,
+                vertical: 8,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: ScaleTransition(
+                      scale: _scaleAnimation,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 16),
+                          _buildWelcomeCard(state, isSmallScreen),
+                          const SizedBox(height: 24),
+                          _buildQuickStats(state, isSmallScreen),
+                          const SizedBox(height: 24),
+                          _buildAppSelectorCard(state, isSmallScreen),
+                          const SizedBox(height: 24),
+                          _buildSettingsCard(state, isSmallScreen),
+                          const SizedBox(height: 24),
+                          const LogPanel(),
+                          const SizedBox(height: 24),
+                          _buildActionButton(state, isSmallScreen),
+                          if (state.selectedApplications.isEmpty)
+                            _buildInfoBanner(state, isSmallScreen),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSliverAppBar(BuildContext context, AppState state, bool isSmallScreen) {
+    return SliverAppBar(
+      expandedHeight: 120,
+      floating: false,
+      pinned: true,
+      elevation: 0,
+      backgroundColor: state.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+      foregroundColor: state.isDarkMode ? Colors.white : const Color(0xFF1E293B),
+      flexibleSpace: FlexibleSpaceBar(
         title: Text(
           'Tremo Save',
           style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: isSmallScreen ? 16 : 18,
+            fontWeight: FontWeight.w700,
+            fontSize: isSmallScreen ? 18 : 22,
+            letterSpacing: -0.5,
           ),
         ),
-        backgroundColor: state.isDarkMode ? Colors.grey[900] : Colors.grey[900],
-        foregroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          // Dark mode toggle
-          IconButton(
-            icon: Icon(
-              state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-              color: state.isDarkMode ? Colors.yellow[300] : Colors.white,
-              size: isSmallScreen ? 20 : 24,
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: state.isDarkMode
+                  ? [
+                      const Color(0xFF1E293B),
+                      const Color(0xFF334155),
+                    ]
+                  : [
+                      Colors.white,
+                      const Color(0xFFF8FAFC),
+                    ],
             ),
-            onPressed: state.toggleDarkMode,
-            tooltip: state.isDarkMode ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối',
           ),
-          // Show logs toggle
-          IconButton(
-            icon: Icon(
-              Icons.history,
-              color: state.showLogs ? Colors.blue[300] : Colors.white,
-              size: isSmallScreen ? 20 : 24,
-            ),
-            onPressed: state.toggleLogs,
-            tooltip: 'Hiển thị lịch sử lưu',
+        ),
+      ),
+      actions: [
+        _buildAppBarButton(
+          icon: state.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+          color: state.isDarkMode ? const Color(0xFFFDBA74) : const Color(0xFF64748B),
+          onPressed: state.toggleDarkMode,
+          tooltip: state.isDarkMode ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối',
+          isSmallScreen: isSmallScreen,
+        ),
+        _buildAppBarButton(
+          icon: Icons.history_rounded,
+          color: state.showLogs ? const Color(0xFF06B6D4) : const Color(0xFF64748B),
+          onPressed: state.toggleLogs,
+          tooltip: 'Hiển thị lịch sử lưu',
+          isSmallScreen: isSmallScreen,
+        ),
+        _buildAppBarButton(
+          icon: Icons.refresh_rounded,
+          color: const Color(0xFF64748B),
+          onPressed: state.refreshApplications,
+          tooltip: 'Làm mới danh sách ứng dụng',
+          isSmallScreen: isSmallScreen,
+        ),
+        _buildAppBarButton(
+          icon: Icons.settings_rounded,
+          color: const Color(0xFF64748B),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SettingsPage()),
           ),
-          // Refresh button
-          IconButton(
-            icon: Icon(
-              Icons.refresh,
-              size: isSmallScreen ? 20 : 24,
-            ),
-            onPressed: state.refreshApplications,
-            tooltip: 'Làm mới danh sách ứng dụng',
-          ),
-          // Settings button
-                           IconButton(
-                   icon: Icon(
-                     Icons.settings,
-                     size: isSmallScreen ? 20 : 24,
-                   ),
-                   onPressed: () {
-                     Navigator.push(
-                       context,
-                       MaterialPageRoute(
-                         builder: (context) => const SettingsPage(),
-                       ),
-                     );
-                   },
-                   tooltip: 'Cài đặt',
-                 ),
+          tooltip: 'Cài đặt',
+          isSmallScreen: isSmallScreen,
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
 
-                 IconButton(
-                   icon: Icon(
-                     Icons.timer,
-                     size: isSmallScreen ? 20 : 24,
-                   ),
-                   onPressed: () async {
-                     // Test save sau 5 giây
-                     ScaffoldMessenger.of(context).showSnackBar(
-                       const SnackBar(
-                         content: Text('Starting 5-second test. Switch to target application now!'),
-                         duration: Duration(seconds: 3),
-                         backgroundColor: Colors.orange,
-                       ),
-                     );
-                     
-                     // Bắt đầu test function
-                     await state.testSaveAfter5Seconds();
-                   },
-                   tooltip: 'Test Save After 5s',
-                 ),
-                 IconButton(
-                   icon: Icon(
-                     Icons.notifications,
-                     size: isSmallScreen ? 20 : 24,
-                   ),
-                   onPressed: () async {
-                     // Test notification system
-                     ScaffoldMessenger.of(context).showSnackBar(
-                       const SnackBar(
-                         content: Text('Testing notification system...'),
-                         duration: Duration(seconds: 2),
-                         backgroundColor: Colors.blue,
-                       ),
-                     );
-                     
-                     // Bắt đầu test notification
-                     await state.testNotificationSystem();
-                   },
-                   tooltip: 'Test Notifications',
-                 ),
+  Widget _buildAppBarButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+    required String tooltip,
+    required bool isSmallScreen,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onPressed,
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            child: Icon(
+              icon,
+              size: isSmallScreen ? 20 : 22,
+              color: color,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWelcomeCard(AppState state, bool isSmallScreen) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: state.isDarkMode
+              ? [
+                  const Color(0xFF6366F1).withOpacity(0.1),
+                  const Color(0xFF06B6D4).withOpacity(0.1),
+                ]
+              : [
+                  const Color(0xFF6366F1).withOpacity(0.05),
+                  const Color(0xFF06B6D4).withOpacity(0.05),
+                ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: state.isDarkMode 
+              ? const Color(0xFF6366F1).withOpacity(0.2)
+              : const Color(0xFF6366F1).withOpacity(0.1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6366F1),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF6366F1).withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.auto_awesome_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Tự động lưu thông minh',
+                      style: TextStyle(
+                        fontSize: isSmallScreen ? 18 : 20,
+                        fontWeight: FontWeight.w700,
+                        color: state.isDarkMode ? Colors.white : const Color(0xFF1E293B),
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Quản lý và bảo vệ công việc của bạn',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: state.isDarkMode 
+                            ? const Color(0xFF94A3B8) 
+                            : const Color(0xFF64748B),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Chọn các ứng dụng bạn muốn tự động lưu. Hệ thống sẽ theo dõi và lưu công việc khi bạn đang sử dụng các ứng dụng đã chọn.',
+            style: TextStyle(
+              fontSize: 14,
+              color: state.isDarkMode 
+                  ? const Color(0xFF94A3B8) 
+                  : const Color(0xFF64748B),
+              height: 1.5,
+            ),
+          ),
         ],
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: state.isDarkMode 
-                ? [
-                    Colors.grey[900]!,
-                    Colors.grey[850]!,
-                  ]
-                : [
-                    Colors.grey[900]!,
-                    Colors.grey[100]!,
-                  ],
-            stops: const [0.0, 0.3],
+    );
+  }
+
+  Widget _buildQuickStats(AppState state, bool isSmallScreen) {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildStatCard(
+            icon: Icons.apps_rounded,
+            label: 'Ứng dụng',
+            value: '${state.selectedApplications.length}',
+            color: const Color(0xFF06B6D4),
+            state: state,
           ),
         ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        const SizedBox(width: 16),
+        Expanded(
+          child: _buildStatCard(
+            icon: Icons.timer_rounded,
+            label: 'Khoảng thời gian',
+            value: '${state.interval}m',
+            color: const Color(0xFF10B981),
+            state: state,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: _buildStatCard(
+            icon: state.isRunning ? Icons.play_circle_rounded : Icons.pause_circle_rounded,
+            label: 'Trạng thái',
+            value: state.isRunning ? 'Hoạt động' : 'Tạm dừng',
+            color: state.isRunning ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+            state: state,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+    required AppState state,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: state.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: state.isDarkMode 
+              ? const Color(0xFF334155) 
+              : const Color(0xFFE2E8F0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: state.isDarkMode ? Colors.white : const Color(0xFF1E293B),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: state.isDarkMode 
+                  ? const Color(0xFF94A3B8) 
+                  : const Color(0xFF64748B),
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppSelectorCard(AppState state, bool isSmallScreen) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: state.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: state.isDarkMode 
+              ? const Color(0xFF334155) 
+              : const Color(0xFFE2E8F0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF06B6D4).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.apps_rounded,
+                  color: Color(0xFF06B6D4),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Chọn ứng dụng',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: state.isDarkMode ? Colors.white : const Color(0xFF1E293B),
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          const AppSelector(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsCard(AppState state, bool isSmallScreen) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: state.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: state.isDarkMode 
+              ? const Color(0xFF334155) 
+              : const Color(0xFFE2E8F0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF59E0B).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.tune_rounded,
+                  color: Color(0xFFF59E0B),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Cài đặt tự động lưu',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: state.isDarkMode ? Colors.white : const Color(0xFF1E293B),
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Icon(
+                Icons.schedule_rounded,
+                size: 20,
+                color: state.isDarkMode 
+                    ? const Color(0xFF94A3B8) 
+                    : const Color(0xFF64748B),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Khoảng thời gian lưu tự động:',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: state.isDarkMode ? Colors.white : const Color(0xFF1E293B),
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFF6366F1).withOpacity(0.1),
+                      const Color(0xFF06B6D4).withOpacity(0.1),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: const Color(0xFF6366F1).withOpacity(0.2),
+                  ),
+                ),
+                child: Text(
+                  '${state.interval} phút',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF6366F1),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: const Color(0xFF6366F1),
+              inactiveTrackColor: state.isDarkMode 
+                  ? const Color(0xFF334155) 
+                  : const Color(0xFFE2E8F0),
+              thumbColor: const Color(0xFF6366F1),
+              overlayColor: const Color(0xFF6366F1).withOpacity(0.1),
+              valueIndicatorColor: const Color(0xFF6366F1),
+              valueIndicatorTextStyle: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
+              trackHeight: 6,
+            ),
+            child: Slider(
+              min: 1,
+              max: 60,
+              divisions: 59,
+              value: state.interval.toDouble(),
+              label: '${state.interval} phút',
+              onChanged: state.setInterval,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton(AppState state, bool isSmallScreen) {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: state.isRunning
+              ? [const Color(0xFFEF4444), const Color(0xFFDC2626)]
+              : [const Color(0xFF10B981), const Color(0xFF059669)],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: (state.isRunning 
+                ? const Color(0xFFEF4444) 
+                : const Color(0xFF10B981)).withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: state.selectedApplications.isEmpty
+              ? null
+              : () {
+                  if (state.isRunning) {
+                    state.stopAutoSave();
+                  } else {
+                    state.startAutoSave();
+                  }
+                },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Header section
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: state.isDarkMode ? Colors.grey[850] : Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.auto_fix_high,
-                            size: 28,
-                            color: state.isDarkMode ? Colors.blue[400] : Colors.blue[600],
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Tự động lưu ứng dụng',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: state.isDarkMode ? Colors.white : Colors.black87,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Chọn các ứng dụng bạn muốn tự động lưu. Hệ thống sẽ chỉ lưu khi bạn đang làm việc với một trong các ứng dụng đã chọn',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: state.isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                        ),
-                      ),
-                    ],
+                Icon(
+                  state.isRunning 
+                      ? Icons.stop_rounded 
+                      : Icons.play_arrow_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  state.isRunning ? 'Dừng tự động lưu' : 'Bắt đầu tự động lưu',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    letterSpacing: -0.25,
                   ),
                 ),
-                
-                const SizedBox(height: 24),
-                
-                // App Selector
-                const AppSelector(),
-                
-                const SizedBox(height: 24),
-                
-                // Settings section
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: state.isDarkMode ? Colors.grey[850] : Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.settings,
-                            size: 24,
-                            color: state.isDarkMode ? Colors.orange[400] : Colors.orange[600],
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Cài đặt',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: state.isDarkMode ? Colors.white : Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                      
-                      const SizedBox(height: 20),
-                      
-                      // Interval setting
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.timer,
-                            size: 20,
-                            color: state.isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Thời gian lưu tự động:',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: state.isDarkMode ? Colors.white : Colors.black87,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: state.isDarkMode ? Colors.blue[900]!.withOpacity(0.3) : Colors.blue[50],
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: state.isDarkMode ? Colors.blue[600]! : Colors.blue[200]!,
-                              ),
-                            ),
-                            child: Text(
-                              '${state.interval} phút',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: state.isDarkMode ? Colors.blue[300] : Colors.blue[700],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      
-                      const SizedBox(height: 12),
-                      
-                      SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: state.isDarkMode ? Colors.blue[400] : Colors.blue[600],
-                          inactiveTrackColor: state.isDarkMode ? Colors.grey[700] : Colors.grey[300],
-                          thumbColor: state.isDarkMode ? Colors.blue[400] : Colors.blue[600],
-                          overlayColor: state.isDarkMode ? Colors.blue[200] : Colors.blue[200],
-                          valueIndicatorColor: state.isDarkMode ? Colors.blue[400] : Colors.blue[600],
-                          valueIndicatorTextStyle: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        child: Slider(
-                          min: 1,
-                          max: 60,
-                          divisions: 59,
-                          value: state.interval.toDouble(),
-                          label: '${state.interval} phút',
-                          onChanged: state.setInterval,
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-                ),
-                
-                // Log Panel
-                const LogPanel(),
-                
-                const SizedBox(height: 24),
-                
-                // Action buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: state.isRunning 
-                              ? (state.isDarkMode ? Colors.red[700] : Colors.red[600])
-                              : (state.isDarkMode ? Colors.green[700] : Colors.green[600]),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 4,
-                        ),
-                        onPressed: state.selectedApplications.isEmpty
-                            ? null
-                            : () {
-                                if (state.isRunning) {
-                                  state.stopAutoSave();
-                                } else {
-                                  state.startAutoSave();
-                                }
-                              },
-                        icon: Icon(
-                          state.isRunning ? Icons.stop : Icons.play_arrow,
-                          size: 24,
-                        ),
-                        label: Text(
-                          state.isRunning ? 'Dừng tự động lưu' : 'Bắt đầu tự động lưu',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                
-                if (state.selectedApplications.isEmpty)
-                  Container(
-                    margin: const EdgeInsets.only(top: 12),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: state.isDarkMode ? Colors.orange[900]!.withOpacity(0.3) : Colors.orange[50],
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: state.isDarkMode ? Colors.orange[700]! : Colors.orange[200]!,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          size: 20,
-                          color: state.isDarkMode ? Colors.orange[300] : Colors.orange[700],
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Vui lòng chọn ít nhất một ứng dụng để bắt đầu',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: state.isDarkMode ? Colors.orange[300] : Colors.orange[700],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                
-                const SizedBox(height: 16),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildInfoBanner(AppState state, bool isSmallScreen) {
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFEF3C7),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.info_outline_rounded,
+            size: 20,
+            color: Color(0xFFF59E0B),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Vui lòng chọn ít nhất một ứng dụng để bắt đầu tự động lưu',
+              style: TextStyle(
+                fontSize: 14,
+                color: const Color(0xFF92400E),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
