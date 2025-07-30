@@ -74,8 +74,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                    body: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(
-              horizontal: isSmallScreen ? 8 : 16,
-              vertical: 12,
+              horizontal: isSmallScreen ? 6 : 12,
+              vertical: 8,
             ),
            child: FadeTransition(
              opacity: _fadeAnimation,
@@ -84,15 +84,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                child: Column(
                                    children: [
                     _buildWelcomeCard(state, isSmallScreen),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     _buildQuickStats(state, isSmallScreen),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     _buildAppSelectorCard(state, isSmallScreen),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     _buildSettingsCard(state, isSmallScreen),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     const LogPanel(),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     _buildActionButton(state, isSmallScreen),
                     if (state.selectedApplications.isEmpty)
                       _buildInfoBanner(state, isSmallScreen),
@@ -246,7 +246,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+      padding: EdgeInsets.all(isSmallScreen ? 10 : 14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -274,7 +274,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: const Color(0xFF6366F1),
                   borderRadius: BorderRadius.circular(16),

@@ -14,8 +14,8 @@ class LogPanel extends StatelessWidget {
     }
     
     return Container(
-      margin: const EdgeInsets.only(top: 12),
-      height: 180,
+      margin: const EdgeInsets.only(top: 8),
+      height: 140,
       decoration: BoxDecoration(
         color: state.isDarkMode ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -34,7 +34,7 @@ class LogPanel extends StatelessWidget {
         children: [
           // Header
                      Container(
-             padding: const EdgeInsets.all(12),
+             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: state.isDarkMode ? Colors.grey[800] : Colors.grey[50],
               borderRadius: const BorderRadius.only(
